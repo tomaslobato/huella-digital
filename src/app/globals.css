@@ -97,6 +97,10 @@
   .star-pop {
     animation: star-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
+
+  .scroll-hint {
+    animation: scroll-hint-bounce 1.6s ease-in-out infinite;
+  }
 }
 
 @keyframes fade-in {
@@ -130,12 +134,25 @@
   }
 }
 
+@keyframes scroll-hint-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateY(4px);
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fade-in,
   .fade-in-late,
   .fade-in-later,
   .line-draw,
-  .star-pop {
+  .star-pop,
+  .scroll-hint {
     animation: none !important;
   }
 }

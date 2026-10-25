@@ -17,7 +17,7 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   title: "Huella Digital — ¿A dónde van tus datos?",
   description:
-    "Conocé qué es la huella digital, descubré a dónde van tus datos según los servicios que usás y aprendé cómo recuperar el control.",
+    "Conoce qué es la huella digital, descubre a dónde van tus datos según los servicios que usas y aprende cómo recuperar el control.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
