@@ -1,0 +1,141 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-display);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+:root {
+  --background: #eef1f4;
+  --foreground: #111318;
+  --card: #eef1f4;
+  --card-foreground: #111318;
+  --popover: #eef1f4;
+  --popover-foreground: #111318;
+  --primary: #111318;
+  --primary-foreground: #eef1f4;
+  --secondary: #e2e7ec;
+  --secondary-foreground: #111318;
+  --muted: #e2e7ec;
+  --muted-foreground: #5c6570;
+  --accent: #e2e7ec;
+  --accent-foreground: #111318;
+  --destructive: #b42318;
+  --border: #cfd6dd;
+  --input: #cfd6dd;
+  --ring: #111318;
+  --radius: 0.25rem;
+  --mark: #0f766e;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  html {
+    @apply scroll-smooth;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display), ui-serif, Georgia, serif;
+  }
+
+  .mark {
+    color: var(--mark);
+  }
+
+  .fade-in {
+    animation: fade-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .fade-in-late {
+    animation: fade-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+  }
+
+  .fade-in-later {
+    animation: fade-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+  }
+
+  .line-draw {
+    animation: line-draw 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+  }
+
+  .star-pop {
+    animation: star-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes line-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes star-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in,
+  .fade-in-late,
+  .fade-in-later,
+  .line-draw,
+  .star-pop {
+    animation: none !important;
+  }
+}
