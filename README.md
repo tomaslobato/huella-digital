@@ -14,7 +14,7 @@ Experiencia web de concientización sobre privacidad: respondés un cuestionario
    - Uso de IA: frecuencia, para qué, si le contás lo personal
 3. **Resultado** — estrellas (1–2 terrible, 3 promedio, 4–5 muy buen nivel), tips por sección y tutorial.
 
-Nada se guarda ni se envía: corre solo en el navegador.
+Las respuestas se guardan de forma anónima.
 
 ## Stack
 

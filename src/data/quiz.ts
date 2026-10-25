@@ -4,6 +4,8 @@ export type QuestionOption = {
   id: string;
   label: string;
   impact: number;
+  /** Si true, al elegirlo se pide un número de horas (1–16) */
+  customHours?: boolean;
 };
 
 export type Question = {
@@ -16,20 +18,23 @@ export type Question = {
   skipIf?: (answers: AnswerMap) => boolean;
 };
 
+export const TIME_CUSTOM_MIN = 6;
+export const TIME_CUSTOM_MAX = 16;
+
 export const questions: Question[] = [
   {
     id: "networks",
-    title: "¿Qué redes sociales usás?",
+    title: "¿Qué redes sociales usás más?",
     hint: "Marcá todas las que tengas activas.",
     type: "multi",
     options: [
       { id: "instagram", label: "Instagram", impact: -7 },
       { id: "tiktok", label: "TikTok", impact: -9 },
       { id: "youtube", label: "YouTube", impact: -5 },
-      { id: "whatsapp", label: "WhatsApp", impact: -4 },
       { id: "x", label: "X (Twitter)", impact: -7 },
-      { id: "reddit", label: "Reddit", impact: -4 },
       { id: "facebook", label: "Facebook", impact: -7 },
+      { id: "telegram", label: "Telegram", impact: -5 },
+      { id: "reddit", label: "Reddit", impact: -4 },
       { id: "none", label: "Ninguna de estas", impact: 8 },
     ],
   },
@@ -41,34 +46,39 @@ export const questions: Question[] = [
       { id: "lt30", label: "Menos de 30 minutos", impact: 10 },
       { id: "30-60", label: "Entre 30 y 60 minutos", impact: 4 },
       { id: "1-3", label: "Entre 1 y 3 horas", impact: -6 },
-      { id: "gt3", label: "Más de 3 horas", impact: -12 },
+      { id: "3-5", label: "Entre 3 y 5 horas", impact: -12 },
+      {
+        id: "more",
+        label: "Más…",
+        impact: -16,
+        customHours: true,
+      },
     ],
   },
   {
     id: "publish",
-    title: "¿Publicás tu vida en redes sociales?",
-    hint: "Fotos, stories, check‑ins, opiniones, rutina…",
+    title: "¿Publicás en redes sociales?",
     type: "single",
     options: [
       {
-        id: "a-lot",
-        label: "Sí, bastante: mi día a día queda online",
+        id: "always",
+        label: "Siempre: casi todos los días dejo algo online",
         impact: -14,
       },
       {
         id: "sometimes",
-        label: "A veces: lo justo para que se sepa de mí",
+        label: "A veces: publico cuando hay algo que quiero compartir",
         impact: -6,
       },
       {
-        id: "rare",
-        label: "Casi nunca; solo algo puntual",
-        impact: 4,
+        id: "occasionally",
+        label: "Ocasionalmente: solo en momentos puntuales",
+        impact: -2,
       },
       {
-        id: "no",
-        label: "No: miro, pero casi no publico",
-        impact: 10,
+        id: "almost-never",
+        label: "Casi nunca: casi no subo nada",
+        impact: 8,
       },
     ],
   },
@@ -77,7 +87,7 @@ export const questions: Question[] = [
     title: "¿Qué tipo de cosas solés publicar?",
     hint: "Podés marcar varias.",
     type: "multi",
-    skipIf: (a) => a.publish === "no" || a.publish === "rare",
+    skipIf: (a) => a.publish === "almost-never",
     options: [
       {
         id: "face-routine",
@@ -120,7 +130,7 @@ export const questions: Question[] = [
     id: "post-freq",
     title: "¿Cada cuánto publicás?",
     type: "single",
-    skipIf: (a) => a.publish === "no" || a.publish === "rare",
+    skipIf: (a) => a.publish === "almost-never",
     options: [
       { id: "several-day", label: "Varias veces al día", impact: -12 },
       { id: "daily", label: "Casi todos los días", impact: -8 },
@@ -132,7 +142,7 @@ export const questions: Question[] = [
     id: "post-audience",
     title: "¿Quién puede ver lo que publicás?",
     type: "single",
-    skipIf: (a) => a.publish === "no",
+    skipIf: (a) => a.publish === "almost-never",
     options: [
       {
         id: "public",
@@ -159,7 +169,8 @@ export const questions: Question[] = [
   {
     id: "login",
     title: "¿Cómo solés iniciar sesión en apps y sitios?",
-    type: "single",
+    hint: "Podés marcar varias.",
+    type: "multi",
     options: [
       {
         id: "google",
@@ -206,15 +217,11 @@ export const questions: Question[] = [
   {
     id: "photos",
     title: "¿Dónde guardás tus fotos?",
-    type: "single",
+    hint: "Podés marcar varias.",
+    type: "multi",
     options: [
       { id: "google-photos", label: "Google Fotos", impact: -8 },
       { id: "icloud", label: "iCloud Fotos", impact: -2 },
-      {
-        id: "both",
-        label: "Los dos (Google Fotos e iCloud)",
-        impact: -10,
-      },
       {
         id: "other-cloud",
         label: "Otro servicio en la nube (Dropbox, OneDrive…)",
@@ -241,9 +248,9 @@ export const questions: Question[] = [
   },
   {
     id: "ai-how",
-    title: "¿Para qué la usás más?",
-    hint: "Elegí lo que más se parezca a tu uso.",
-    type: "single",
+    title: "¿Para qué usás la inteligencia artificial?",
+    hint: "Podés marcar varias.",
+    type: "multi",
     skipIf: (a) => a["ai-daily"] === "no",
     options: [
       {
@@ -322,11 +329,26 @@ export type TutorialStep = {
   detail: string;
 };
 
+export type UsageComparison = {
+  userSocialHours: number;
+  userSocialLabel: string;
+  avgSocialHours: number;
+  userPhoneHours: number;
+  avgPhoneHours: number;
+  socialDeltaHours: number;
+  phoneDeltaHours: number;
+  socialVerdict: string;
+  phoneVerdict: string;
+  blurb: string;
+};
+
 export type ScoreResult = {
   stars: number;
   score: number;
   label: string;
   summary: string;
+  encouragement: string;
+  comparison: UsageComparison;
   tips: Tip[];
   phoneTutorial: {
     platform: "android" | "iphone" | "other";
@@ -336,6 +358,71 @@ export type ScoreResult = {
   photoAdvice: Tip | null;
   networksDetail: { id: string; name: string; note: string }[];
 };
+
+/** Promedios orientativos globales (uso diario estimado). */
+export const AVG_SOCIAL_HOURS = 2.4;
+export const AVG_PHONE_HOURS = 4.5;
+
+function clamp(n: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, n));
+}
+
+const TIME_HOURS: Record<string, { hours: number; label: string }> = {
+  lt30: { hours: 0.25, label: "menos de 30 minutos" },
+  "30-60": { hours: 0.75, label: "entre 30 y 60 minutos" },
+  "1-3": { hours: 2, label: "entre 1 y 3 horas" },
+  "3-5": { hours: 4, label: "entre 3 y 5 horas" },
+};
+
+export function parseTimeHours(answers: AnswerMap): {
+  hours: number;
+  label: string;
+} {
+  const timeId = typeof answers.time === "string" ? answers.time : "1-3";
+  if (timeId === "more") {
+    const raw = Number(
+      typeof answers.timeHours === "string" ? answers.timeHours : NaN,
+    );
+    const hours = clamp(
+      Number.isFinite(raw) ? raw : TIME_CUSTOM_MIN,
+      TIME_CUSTOM_MIN,
+      TIME_CUSTOM_MAX,
+    );
+    return {
+      hours,
+      label: `${hours} hora${hours === 1 ? "" : "s"} al día`,
+    };
+  }
+  return TIME_HOURS[timeId] ?? TIME_HOURS["1-3"];
+}
+
+export function timeImpact(answers: AnswerMap): number {
+  const timeId = typeof answers.time === "string" ? answers.time : "";
+  if (timeId === "more") {
+    const { hours } = parseTimeHours(answers);
+    // Más horas = peor impacto (tope ~-22)
+    return -Math.min(22, 12 + Math.round((hours - 5) * 1.5));
+  }
+  const opt = questions
+    .find((q) => q.id === "time")
+    ?.options.find((o) => o.id === timeId);
+  return opt?.impact ?? 0;
+}
+
+export function isValidTimeAnswer(answers: AnswerMap): boolean {
+  const timeId = answers.time;
+  if (typeof timeId !== "string" || !timeId) return false;
+  if (timeId !== "more") return true;
+  const raw = Number(
+    typeof answers.timeHours === "string" ? answers.timeHours : NaN,
+  );
+  return (
+    Number.isFinite(raw) &&
+    Number.isInteger(raw) &&
+    raw >= TIME_CUSTOM_MIN &&
+    raw <= TIME_CUSTOM_MAX
+  );
+}
 
 const SECTION: Record<string, string> = {
   networks: "Redes sociales",
@@ -365,9 +452,9 @@ const NETWORK_META: Record<string, { name: string; note: string }> = {
     name: "YouTube",
     note: "Historial y búsquedas viven en tu cuenta Google y se usan para recomendaciones y anuncios.",
   },
-  whatsapp: {
-    name: "WhatsApp",
-    note: "Los mensajes van cifrados, pero metadatos (con quién, cuándo) y la cuenta llegan a Meta.",
+  telegram: {
+    name: "Telegram",
+    note: "Chats en la nube (salvo secret chats), contactos y uso de bots pueden exponer datos; el número queda vinculado a la cuenta.",
   },
   x: {
     name: "X (Twitter)",
@@ -383,12 +470,14 @@ const NETWORK_META: Record<string, { name: string; note: string }> = {
   },
 };
 
-function clamp(n: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, n));
-}
-
 function tip(from: string, text: string): Tip {
   return { from, section: SECTION[from] ?? from, text };
+}
+
+function asList(value: string | string[] | undefined): string[] {
+  if (Array.isArray(value)) return value;
+  if (typeof value === "string" && value.length > 0) return [value];
+  return [];
 }
 
 export function scoreAnswers(answers: AnswerMap): ScoreResult {
@@ -415,6 +504,10 @@ export function scoreAnswers(answers: AnswerMap): ScoreResult {
         if (sensitive.length >= 4) raw -= 6;
       }
     } else if (typeof value === "string") {
+      if (q.id === "time") {
+        raw += timeImpact(answers);
+        continue;
+      }
       const opt = q.options.find((o) => o.id === value);
       if (opt) raw += opt.impact;
     }
@@ -434,10 +527,18 @@ export function scoreAnswers(answers: AnswerMap): ScoreResult {
 
   const summaries: Record<number, string> = {
     1: "Tu huella digital está muy expuesta. Redes, publicaciones, login, nube o IA dejan un rastro fácil de seguir.",
-    2: "Nivel terrible: hay varias puertas abiertas. Los tips de cada sección atacan justo lo que respondiste.",
-    3: "Nivel promedio: ni tan expuesto ni tan protegido. Con los cambios puntuales de abajo podés subir de categoría.",
-    4: "Muy buen nivel de privacidad. Tus hábitos ya limitan el rastro; los tips afinan detalles.",
-    5: "Muy buen nivel de privacidad. Seguí cuidando qué publicás y qué le contás a las máquinas: se mantiene con el tiempo.",
+    2: "Hay varias puertas abiertas en tu día a día digital. Todavía estás a tiempo de cerrarlas.",
+    3: "Ni tan expuesto ni tan protegido: un nivel intermedio, con margen claro para mejorar.",
+    4: "Tus hábitos ya limitan bastante el rastro. Vas por un camino sólido.",
+    5: "Cuidás bien qué compartís y con quién. La privacidad se nota en tus respuestas.",
+  };
+
+  const encouragements: Record<number, string> = {
+    1: "Empezar de cero también es un logro: cada ajuste que hagas hoy achica tu huella. No hace falta ser perfecto; hace falta el primer paso.",
+    2: "No estás solo en esto. Con un par de cambios concretos (permisos, audiencia, IA) vas a notar la diferencia en poco tiempo. Dale una chance.",
+    3: "Estás en el medio del camino, y eso ya es conciencia. Sumá un hábito por semana y vas a subir de nivel sin agobiarte.",
+    4: "Muy bien: se nota que pensás antes de compartir. Seguí afinando detalles; tu yo del futuro te lo va a agradecer.",
+    5: "Excelente cuidado. Compartí lo que aprendiste con alguien cercano: la privacidad mejora cuando el entorno también se cuida.",
   };
 
   const networkIds = normalizeNetworks(
@@ -449,6 +550,8 @@ export function scoreAnswers(answers: AnswerMap): ScoreResult {
     score,
     label: labels[stars],
     summary: summaries[stars],
+    encouragement: encouragements[stars],
+    comparison: buildComparison(answers),
     tips: buildTips(answers, networkIds),
     phoneTutorial: buildPhoneTutorial(answers.phone),
     photoAdvice: buildPhotoAdvice(answers.photos),
@@ -457,6 +560,59 @@ export function scoreAnswers(answers: AnswerMap): ScoreResult {
       name: NETWORK_META[id]?.name ?? id,
       note: NETWORK_META[id]?.note ?? "",
     })),
+  };
+}
+
+function buildComparison(answers: AnswerMap): UsageComparison {
+  const social = parseTimeHours(answers);
+  const timeId = typeof answers.time === "string" ? answers.time : "1-3";
+
+  // Estimación de tiempo de pantalla: redes + margen de otras apps.
+  const phonePad =
+    timeId === "lt30" || timeId === "30-60"
+      ? 1.8
+      : timeId === "1-3"
+        ? 2.2
+        : timeId === "3-5"
+          ? 1.6
+          : 1.2;
+  const userPhoneHours = Math.round((social.hours + phonePad) * 10) / 10;
+
+  const socialDelta = Math.round((social.hours - AVG_SOCIAL_HOURS) * 10) / 10;
+  const phoneDelta = Math.round((userPhoneHours - AVG_PHONE_HOURS) * 10) / 10;
+
+  const socialVerdict =
+    socialDelta <= -0.5
+      ? "Estás por debajo del promedio de redes."
+      : socialDelta >= 0.5
+        ? "Estás por encima del promedio de redes."
+        : "Estás cerca del promedio de redes.";
+
+  const phoneVerdict =
+    phoneDelta <= -0.5
+      ? "Tu uso estimado de teléfono es menor al promedio."
+      : phoneDelta >= 0.5
+        ? "Tu uso estimado de teléfono supera al promedio."
+        : "Tu uso estimado de teléfono ronda el promedio.";
+
+  const blurb =
+    socialDelta >= 1.5
+      ? "Cuanto más tiempo en feeds, más señales acumulan las plataformas sobre vos. Bajar un poco el scroll ya reduce la huella."
+      : socialDelta <= -1
+        ? "Menos horas en redes suele significar menos perfil publicitario. Buen punto de partida."
+        : "Estar cerca del promedio no es neutro: el promedio global ya es alto. Cualquier recorte cuenta.";
+
+  return {
+    userSocialHours: social.hours,
+    userSocialLabel: social.label,
+    avgSocialHours: AVG_SOCIAL_HOURS,
+    userPhoneHours,
+    avgPhoneHours: AVG_PHONE_HOURS,
+    socialDeltaHours: socialDelta,
+    phoneDeltaHours: phoneDelta,
+    socialVerdict,
+    phoneVerdict,
+    blurb,
   };
 }
 
@@ -492,11 +648,11 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
         ),
       );
     }
-    if (networkIds.includes("whatsapp")) {
+    if (networkIds.includes("telegram")) {
       tips.push(
         tip(
           "networks",
-          "WhatsApp: limitá foto/info/última vez; revisá datos compartidos con Meta; preferí backup cifrado o sin nube.",
+          "Telegram: desactivá sincronizar contactos, revisá quién puede encontrarte por número y usá secret chats para lo sensible.",
         ),
       );
     }
@@ -526,47 +682,53 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     }
   }
 
-  switch (answers.time) {
-    case "lt30":
+  {
+    const timeId = answers.time;
+    if (timeId === "lt30") {
       tips.push(
         tip(
           "time",
           "Poco tiempo en redes: menos señales para los algoritmos. Mantené límites de pantalla.",
         ),
       );
-      break;
-    case "30-60":
+    } else if (timeId === "30-60") {
       tips.push(
         tip(
           "time",
           "Media hora a una hora es manejable. Evitá el scroll infinito de noche.",
         ),
       );
-      break;
-    case "1-3":
+    } else if (timeId === "1-3") {
       tips.push(
         tip(
           "time",
           "1–3 horas diarias arman un perfil muy rico. Usá límites por app y apagá notificaciones no esenciales.",
         ),
       );
-      break;
-    case "gt3":
+    } else if (timeId === "3-5") {
       tips.push(
         tip(
           "time",
-          "Más de 3 horas: el feed te conoce al dedillo. Límites duros, escala de grises y menos notificaciones.",
+          "3–5 horas: ya estás por encima del promedio mundial. Probá un tope diario y sacá el teléfono del dormitorio.",
         ),
       );
-      break;
+    } else if (timeId === "more") {
+      const { hours } = parseTimeHours(answers);
+      tips.push(
+        tip(
+          "time",
+          `${hours} horas en redes es muchísimo rastro diario. Empezá recortando 30 minutos por día; límites por app y escala de grises ayudan.`,
+        ),
+      );
+    }
   }
 
   switch (answers.publish) {
-    case "a-lot":
+    case "always":
       tips.push(
         tip(
           "publish",
-          "Publicar el día a día arma un mapa de tu vida (rutina, cara, vínculos). Bajá la frecuencia y sacá ubicación de las piezas nuevas.",
+          "Publicar siempre arma un mapa continuo de tu vida. Bajá un poco la frecuencia y sacá ubicación de lo nuevo.",
         ),
       );
       break;
@@ -574,23 +736,23 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       tips.push(
         tip(
           "publish",
-          "Publicar “lo justo” igual deja rastro acumulado. Antes de subir, preguntate: ¿esto lo vería cómodo un desconocido en 5 años?",
+          "Publicar a veces igual deja rastro acumulado. Antes de subir, preguntate: ¿esto lo vería cómodo un desconocido en 5 años?",
         ),
       );
       break;
-    case "rare":
+    case "occasionally":
       tips.push(
         tip(
           "publish",
-          "Casi no publicar es una gran defensa. Cuidá igual los likes, guards y listas: también delatan intereses.",
+          "Publicar de vez en cuando está bien si cuidás audiencia y datos sensibles. Revisá posts viejos que sigan públicos.",
         ),
       );
       break;
-    case "no":
+    case "almost-never":
       tips.push(
         tip(
           "publish",
-          "Mirar sin publicar reduce mucho la exposición. Seguí así y mantené perfiles privados por si algún día posteás.",
+          "Casi no publicar es una gran defensa. Cuidá igual likes y guards: también delatan intereses.",
         ),
       );
       break;
@@ -726,55 +888,55 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       break;
   }
 
-  switch (answers.login) {
-    case "google":
+  {
+    const logins = asList(answers.login);
+    if (logins.includes("google")) {
       tips.push(
         tip(
           "login",
           "“Continuar con Google” une tu identidad entre sitios. Preferí mail propio cuando puedas.",
         ),
       );
-      break;
-    case "apple":
-      tips.push(
-        tip(
-          "login",
-          "Sign in with Apple (con ocultar correo) es mejor que Google/Meta. Igual no lo uses en todos lados sin necesidad.",
-        ),
-      );
-      break;
-    case "facebook":
+    }
+    if (logins.includes("facebook")) {
       tips.push(
         tip(
           "login",
           "Login con Facebook comparte grafo social. Migrá esas cuentas a mail + contraseña única.",
         ),
       );
-      break;
-    case "email-same":
+    }
+    if (logins.includes("apple")) {
+      tips.push(
+        tip(
+          "login",
+          "Sign in with Apple (con ocultar correo) es mejor que Google/Meta. Igual no lo uses en todos lados sin necesidad.",
+        ),
+      );
+    }
+    if (logins.includes("email-same")) {
       tips.push(
         tip(
           "login",
           "Misma contraseña en todos lados: riesgo alto. Gestor de contraseñas + 2FA en el correo.",
         ),
       );
-      break;
-    case "email-unique":
+    } else if (logins.includes("email-unique") && !logins.includes("manager-2fa")) {
       tips.push(
         tip(
           "login",
           "Contraseñas distintas: buen piso. Sumá gestor + 2FA.",
         ),
       );
-      break;
-    case "manager-2fa":
+    }
+    if (logins.includes("manager-2fa")) {
       tips.push(
         tip(
           "login",
           "Gestor + 2FA: muy sólido. Códigos de respaldo offline y preferí app/llave antes que SMS.",
         ),
       );
-      break;
+    }
   }
 
   switch (answers["ai-daily"]) {
@@ -812,47 +974,48 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       break;
   }
 
-  switch (answers["ai-how"]) {
-    case "study-work":
+  {
+    const aiHow = asList(answers["ai-how"]);
+    if (aiHow.includes("study-work")) {
       tips.push(
         tip(
           "ai-how",
           "Para estudio/laburo: sacá nombres, IDs y datos de clientes antes de pegar texto. Preferí ejemplos ficticios.",
         ),
       );
-      break;
-    case "ideas":
+    }
+    if (aiHow.includes("ideas")) {
       tips.push(
         tip(
           "ai-how",
           "Ideas y ocio: bajo riesgo si no mezclás datos reales. No subas capturas con notificaciones o mails visibles.",
         ),
       );
-      break;
-    case "life":
+    }
+    if (aiHow.includes("life")) {
       tips.push(
         tip(
           "ai-how",
           "Consejos de vida/salud/plata: muy sensible. Usá formulaciones genéricas; lo íntimo no debería viajar a un proveedor de IA.",
         ),
       );
-      break;
-    case "docs":
+    }
+    if (aiHow.includes("docs")) {
       tips.push(
         tip(
           "ai-how",
           "Pegar documentos o mails es de las peores fugas. Resumí vos primero o usá herramientas locales/offline si existe la opción.",
         ),
       );
-      break;
-    case "images":
+    }
+    if (aiHow.includes("images")) {
       tips.push(
         tip(
           "ai-how",
           "Subir fotos a una IA puede exponer caras, documentos y metadatos EXIF. Recortá y anonimizá antes, o no las subas.",
         ),
       );
-      break;
+    }
   }
 
   switch (answers["ai-personal"]) {
@@ -1007,33 +1170,47 @@ function buildPhoneTutorial(
 function buildPhotoAdvice(
   photos: string | string[] | undefined,
 ): Tip | null {
-  switch (photos) {
-    case "google-photos":
-      return tip(
-        "photos",
-        "Google Fotos analiza caras, lugares y objetos. Desactivá agrupación facial si no la usás, revisá Activity y evitá backups en Wi‑Fi ajenos. Para más control: exportá con Takeout y pasá a local cifrado o Nextcloud.",
-      );
-    case "icloud":
-      return tip(
-        "photos",
-        "iCloud cifra en tránsito y en reposo, pero sigue siendo una nube central. 2FA fuerte, revisá dispositivos del Apple ID y Relé privado. Máxima reserva: fotos solo en disco/NAS cifrado.",
-      );
-    case "both":
-      return tip(
-        "photos",
-        "Google Fotos + iCloud duplica el álbum en dos empresas. Elegí una sola nube (o local) y borrá la otra después de exportar.",
-      );
-    case "other-cloud":
-      return tip(
-        "photos",
-        "Dropbox/OneDrive también indexan. 2FA, sin carpetas públicas de más, y si es sensible preferí cifrado E2E (Proton Drive, Tresorit).",
-      );
-    case "local":
-      return tip(
-        "photos",
-        "Solo local: excelente. Hacé backups cifrados (disco externo / Cryptomator) por si se rompe el teléfono.",
-      );
-    default:
-      return null;
+  const list = asList(photos);
+  if (list.length === 0) return null;
+
+  if (list.includes("local") && list.length === 1) {
+    return tip(
+      "photos",
+      "Solo local: excelente. Hacé backups cifrados (disco externo / Cryptomator) por si se rompe el teléfono.",
+    );
   }
+
+  const hasGoogle = list.includes("google-photos");
+  const hasIcloud = list.includes("icloud");
+  const hasOther = list.includes("other-cloud");
+
+  if (hasGoogle && hasIcloud) {
+    return tip(
+      "photos",
+      "Google Fotos + iCloud duplica el álbum en dos empresas. Elegí una sola nube (o local) y borrá la otra después de exportar.",
+    );
+  }
+  if (hasGoogle) {
+    return tip(
+      "photos",
+      "Google Fotos analiza caras, lugares y objetos. Desactivá agrupación facial si no la usás, revisá Activity y evitá backups en Wi‑Fi ajenos. Para más control: exportá con Takeout y pasá a local cifrado o Nextcloud.",
+    );
+  }
+  if (hasIcloud) {
+    return tip(
+      "photos",
+      "iCloud cifra en tránsito y en reposo, pero sigue siendo una nube central. 2FA fuerte, revisá dispositivos del Apple ID y Relé privado. Máxima reserva: fotos solo en disco/NAS cifrado.",
+    );
+  }
+  if (hasOther) {
+    return tip(
+      "photos",
+      "Dropbox/OneDrive también indexan. 2FA, sin carpetas públicas de más, y si es sensible preferí cifrado E2E (Proton Drive, Tresorit).",
+    );
+  }
+
+  return tip(
+    "photos",
+    "Si mezclás nube y almacenamiento local, asegurate de no dejar copias olvidadas en servicios viejos.",
+  );
 }
