@@ -40,11 +40,11 @@ export const services: Service[] = [
     ],
     controlUrl: "https://myaccount.google.com/data-and-privacy",
     steps: [
-      "Abrí Mi cuenta de Google → Datos y privacidad.",
-      "Desactivá Historial de ubicaciones y Actividad en la Web y en Apps.",
-      "Configurá borrado automático (3 o 18 meses) del historial.",
-      "Revisá Controles de anuncios y desmarcá personalización si preferís.",
-      "Descargá una copia con Takeout antes de borrar datos sensibles.",
+      "Abre Mi cuenta de Google → Datos y privacidad.",
+      "Desactiva Historial de ubicaciones y Actividad en la Web y en Apps.",
+      "Configura borrado automático (3 o 18 meses) del historial.",
+      "Revisa Controles de anuncios y desmarca personalización si prefieres.",
+      "Descarga una copia con Takeout antes de borrar datos sensibles.",
     ],
     alternatives: [
       { name: "DuckDuckGo / Startpage", note: "Búsqueda sin perfil publicitario persistente." },
@@ -77,11 +77,11 @@ export const services: Service[] = [
     ],
     controlUrl: "https://www.facebook.com/privacy/center",
     steps: [
-      "Entrá al Centro de privacidad de Facebook o Instagram.",
-      "Limitá la audiencia de publicaciones a Amigos o Solo yo.",
-      "Desactivá Actividad fuera de Facebook / Actividad con empresas.",
-      "Revisá Anuncios → Temas de interés y ocultá categorías sensibles.",
-      "Apagá el acceso a contactos y a ubicación en el sistema operativo.",
+      "Entra al Centro de privacidad de Facebook o Instagram.",
+      "Limita la audiencia de publicaciones a Amigos o Solo yo.",
+      "Desactiva Actividad fuera de Facebook / Actividad con empresas.",
+      "Revisa Anuncios → Temas de interés y oculta categorías sensibles.",
+      "Apaga el acceso a contactos y a ubicación en el sistema operativo.",
     ],
     alternatives: [
       { name: "Mastodon / Bluesky", note: "Redes más abiertas y con menos publicidad." },
@@ -96,13 +96,13 @@ export const services: Service[] = [
     tagline: "Mensajes cifrados, pero metadatos y la cuenta van a Meta.",
     dataCollected: [
       "Número de teléfono y foto de perfil",
-      "Metadatos: con quién hablás, cuándo y desde dónde (aprox.)",
-      "Estado, grupos y lista de contactos (si sincronizás)",
+      "Metadatos: con quién hablas, cuándo y desde dónde (aprox.)",
+      "Estado, grupos y lista de contactos (si sincronizas)",
       "Uso de funciones comerciales y de pagos donde existan",
     ],
     destinations: [
       "Servidores de WhatsApp / Meta",
-      "Copias de seguridad en Google Drive o iCloud (si las activás; ahí no hay cifrado de punta a punta por defecto)",
+      "Copias de seguridad en Google Drive o iCloud (si las activas; ahí no hay cifrado de punta a punta por defecto)",
     ],
     sharedWith: [
       "Empresas del grupo Meta (según la región y la configuración)",
@@ -110,10 +110,10 @@ export const services: Service[] = [
     ],
     controlUrl: "https://www.whatsapp.com/privacy",
     steps: [
-      "Ajustes → Privacidad: limitá Quién puede ver foto, info y última vez.",
-      "Desactivá lectura de confirmaciones si no querés que vean el visto.",
-      "Revisá si compartís datos con empresas de Meta en Ajustes → Privacidad.",
-      "Preferí copias cifradas de extremo a extremo o evitá backup en la nube.",
+      "Ajustes → Privacidad: limita Quién puede ver foto, info y última vez.",
+      "Desactiva lectura de confirmaciones si no quieres que vean el visto.",
+      "Revisa si compartes datos con empresas de Meta en Ajustes → Privacidad.",
+      "Prefiere copias cifradas de extremo a extremo o evita backup en la nube.",
       "No aceptes invitaciones a canales o grupos de desconocidos.",
     ],
     alternatives: [
@@ -146,13 +146,13 @@ export const services: Service[] = [
     controlUrl: "https://www.tiktok.com/privacy/settings",
     steps: [
       "Perfil → Menú → Ajustes y privacidad → Privacidad.",
-      "Poné la cuenta en privada si no necesitás audiencia pública.",
-      "Desactivá sugerencias a contactos y sincronización de la agenda.",
-      "En Personalización y datos, limitá anuncios personalizados.",
-      "Borrá el historial de videos vistos periódicamente.",
+      "Pon la cuenta en privada si no necesitas audiencia pública.",
+      "Desactiva sugerencias a contactos y sincronización de la agenda.",
+      "En Personalización y datos, limita anuncios personalizados.",
+      "Borra el historial de videos vistos periódicamente.",
     ],
     alternatives: [
-      { name: "YouTube sin cuenta", note: "Menos perfil persistente si navegás en modo limitado." },
+      { name: "YouTube sin cuenta", note: "Menos perfil persistente si navegas en modo limitado." },
       { name: "PeerTube", note: "Video federado, sin feed publicitario central." },
     ],
   },
@@ -180,10 +180,10 @@ export const services: Service[] = [
     controlUrl: "https://x.com/settings/privacy_and_safety",
     steps: [
       "Ajustes → Privacidad y seguridad.",
-      "Desactivá marcar ubicación en posts y descubribilidad por email/teléfono.",
-      "Limitá quién puede enviarte mensajes y menciones.",
-      "Revisá Personalización de anuncios y desactivá lo que no quieras.",
-      "Descargá tu archivo y borrá posts antiguos sensibles.",
+      "Desactiva marcar ubicación en posts y descubribilidad por email/teléfono.",
+      "Limita quién puede enviarte mensajes y menciones.",
+      "Revisa Personalización de anuncios y desactiva lo que no quieras.",
+      "Descarga tu archivo y borra posts antiguos sensibles.",
     ],
     alternatives: [
       { name: "Bluesky", note: "Protocolo abierto (AT) con más control del feed." },
@@ -216,9 +216,9 @@ export const services: Service[] = [
     steps: [
       "Cuenta → Tu información de privacidad / Solicitudes de datos.",
       "Gestioná historial de búsquedas y recomendaciones.",
-      "En Alexa: borrá grabaciones de voz y limitá uso para mejorar servicios.",
-      "Desactivá anuncios personalizados basados en intereses.",
-      "Revisá dispositivos vinculados y cerrá sesiones que no uses.",
+      "En Alexa: borra grabaciones de voz y limita uso para mejorar servicios.",
+      "Desactiva anuncios personalizados basados en intereses.",
+      "Revisa dispositivos vinculados y cierra sesiones que no uses.",
     ],
     alternatives: [
       { name: "Tiendas locales / cooperativas", note: "Menos perfil unificado de consumo." },
@@ -245,15 +245,15 @@ export const services: Service[] = [
     sharedWith: [
       "Socios de seguridad y antimalware",
       "Anunciantes en productos con ads (p. ej. Bing)",
-      "Administradores de tu organización si usás cuenta laboral",
+      "Administradores de tu organización si usas cuenta laboral",
     ],
     controlUrl: "https://account.microsoft.com/privacy",
     steps: [
-      "Entrá a account.microsoft.com/privacy.",
-      "Desactivá historial de actividad y de ubicación que no necesites.",
+      "Entra a account.microsoft.com/privacy.",
+      "Desactiva historial de actividad y de ubicación que no necesites.",
       "En Windows: Configuración → Privacidad y seguridad → Diagnósticos (básico).",
-      "Revisá permisos de micrófono, cámara y notificaciones por app.",
-      "Limitá datos usados para entrenar experiencias de IA si la opción está disponible.",
+      "Revisa permisos de micrófono, cámara y notificaciones por app.",
+      "Limita datos usados para entrenar experiencias de IA si la opción está disponible.",
     ],
     alternatives: [
       { name: "LibreOffice + Nextcloud", note: "Ofimática y archivos bajo tu control." },
@@ -275,7 +275,7 @@ export const services: Service[] = [
     destinations: [
       "Centros de datos de Apple",
       "Procesamiento on‑device cuando es posible (Face ID, fotos)",
-      "iCloud Private Relay / Hide My Email si los usás",
+      "iCloud Private Relay / Hide My Email si los usas",
     ],
     sharedWith: [
       "Desarrolladores de apps (según permisos que otorgues)",
@@ -285,13 +285,13 @@ export const services: Service[] = [
     controlUrl: "https://privacy.apple.com/",
     steps: [
       "Ajustes → [tu nombre] → Inicio de sesión y seguridad / iCloud.",
-      "Revisá apps con acceso a iCloud y desactivá lo innecesario.",
+      "Revisa apps con acceso a iCloud y desactiva lo innecesario.",
       "Ajustes → Privacidad y seguridad: ubicación, tracking, micrófono.",
-      "Pedí App Tracking Transparency en denegar por defecto.",
-      "Activá Relé privado y Ocultar mi correo si tenés iCloud+.",
+      "Pide App Tracking Transparency en denegar por defecto.",
+      "Activa Relé privado y Ocultar mi correo si tienes iCloud+.",
     ],
     alternatives: [
-      { name: "GrapheneOS (Pixel)", note: "Android endurecido si priorizás control total." },
+      { name: "GrapheneOS (Pixel)", note: "Android endurecido si priorizas control total." },
       { name: "Almacenamiento local cifrado", note: "Menos dependencia de iCloud." },
     ],
   },
@@ -319,10 +319,10 @@ export const services: Service[] = [
     controlUrl: "https://www.spotify.com/account/privacy/",
     steps: [
       "Cuenta → Privacidad.",
-      "Desactivá escuchas públicas y sesiones privadas cuando quieras.",
+      "Desactiva escuchas públicas y sesiones privadas cuando quieras.",
       "Gestioná descarga de datos y publicidad personalizada.",
       "Desconectá apps de terceros en Apps autorizadas.",
-      "Evitá conectar Facebook/Google si no es necesario.",
+      "Evita conectar Facebook/Google si no es necesario.",
     ],
     alternatives: [
       { name: "Buycott / Bandcamp", note: "Compra directa a artistas." },
@@ -334,7 +334,7 @@ export const services: Service[] = [
     name: "Netflix",
     category: "Streaming",
     risk: "medio",
-    tagline: "Qué mirás, cuándo y en qué dispositivo alimenta el algoritmo.",
+    tagline: "Qué miras, cuándo y en qué dispositivo alimenta el algoritmo.",
     dataCollected: [
       "Historial de reproducción y calificaciones",
       "Dispositivos, IP y red usada",
@@ -352,11 +352,11 @@ export const services: Service[] = [
     ],
     controlUrl: "https://www.netflix.com/account",
     steps: [
-      "Cuenta → Perfiles: revisá historial y mi lista.",
-      "Desactivá personalización extra si tu región ofrece el control.",
-      "Cerrá sesiones en Dispositivos / Acceso reciente.",
-      "Usá perfiles separados para no mezclar gustos y datos.",
-      "Pedí descarga de datos personales desde Ayuda de Netflix.",
+      "Cuenta → Perfiles: revisa historial y mi lista.",
+      "Desactiva personalización extra si tu región ofrece el control.",
+      "Cierra sesiones en Dispositivos / Acceso reciente.",
+      "Usa perfiles separados para no mezclar gustos y datos.",
+      "Pide descarga de datos personales desde Ayuda de Netflix.",
     ],
     alternatives: [
       { name: "Bibliotecas públicas digitales", note: "Préstamo legal con menos perfil comercial." },
@@ -387,13 +387,13 @@ export const services: Service[] = [
     controlUrl: "https://www.linkedin.com/mypreferences/d/categories/privacy",
     steps: [
       "Me → Ajustes y privacidad.",
-      "Limitá visibilidad del perfil y de la foto.",
-      "Desactivá compartir datos de perfil con servicios de Microsoft no deseados.",
+      "Limita visibilidad del perfil y de la foto.",
+      "Desactiva compartir datos de perfil con servicios de Microsoft no deseados.",
       "Gestioná anuncios y datos demográficos inferidos.",
-      "Revisá aplicaciones autorizadas y sesiones activas.",
+      "Revisa aplicaciones autorizadas y sesiones activas.",
     ],
     alternatives: [
-      { name: "Portfolio personal / web propia", note: "Controlás qué se publica." },
+      { name: "Portfolio personal / web propia", note: "Controlas qué se publica." },
       { name: "Comunidades de oficio", note: "Networking sin un grafo publicitario único." },
     ],
   },
@@ -421,8 +421,8 @@ export const services: Service[] = [
     controlUrl: "https://discord.com/settings/privacy",
     steps: [
       "Ajustes de usuario → Privacidad y seguridad.",
-      "Desactivá DM de miembros de servidores desconocidos.",
-      "Revisá quién puede agregarte como amigo.",
+      "Desactiva DM de miembros de servidores desconocidos.",
+      "Revisa quién puede agregarte como amigo.",
       "Filtrá contenido explícito y logs de actividad.",
       "Auditá apps autorizadas y bots con permisos amplios.",
     ],
