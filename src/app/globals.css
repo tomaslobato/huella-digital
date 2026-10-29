@@ -55,17 +55,58 @@
   --ring: #111318;
   --radius: 0.25rem;
   --mark: #0f766e;
+  --copy: #3d4650;
+  --track: #d5dce3;
+  --star-empty: #c5ced6;
+  --dot: #b8c2cc;
+  color-scheme: light;
+}
+
+.dark {
+  --background: #14181d;
+  --foreground: #e8edf1;
+  --card: #14181d;
+  --card-foreground: #e8edf1;
+  --popover: #1b2128;
+  --popover-foreground: #e8edf1;
+  --primary: #e8edf1;
+  --primary-foreground: #14181d;
+  --secondary: #222a32;
+  --secondary-foreground: #e8edf1;
+  --muted: #222a32;
+  --muted-foreground: #93a0ab;
+  --accent: #222a32;
+  --accent-foreground: #e8edf1;
+  --destructive: #f07167;
+  --border: #343e49;
+  --input: #343e49;
+  --ring: #c5ced6;
+  --mark: #2fbfae;
+  --copy: #c5ced6;
+  --track: #2a333c;
+  --star-empty: #3d4752;
+  --dot: #5c6772;
+  color-scheme: dark;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    @apply scroll-smooth bg-background;
+  }
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
-  html {
-    @apply scroll-smooth;
+  /* Solo después del primer render, para que el cambio de tema se anime
+     y la carga inicial no haga una transición desde el color equivocado. */
+  html.theme-ready body,
+  html.theme-ready body * {
+    transition-property: background-color, border-color, color, fill, stroke,
+      outline-color;
+    transition-duration: 280ms;
+    transition-timing-function: ease;
   }
 }
 

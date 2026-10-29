@@ -1,7 +1,21 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
-import { ArrowLeft, ArrowRight, ChevronDown, Minus, Plus } from "lucide-react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ChevronDown,
+  Minus,
+  Moon,
+  Plus,
+  Sun,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StarRating } from "@/components/star-rating";
 import {
@@ -40,6 +54,28 @@ function groupTipsBySection(tips: Tip[]): { section: string; items: string[] }[]
   }));
 }
 
+const THEME_KEY = "theme";
+
+function readStoredTheme(): "light" | "dark" | null {
+  try {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored === "light" || stored === "dark") return stored;
+  } catch {
+    /* localStorage no disponible */
+  }
+  return null;
+}
+
+/** Misma regla que el script del layout: lo guardado, o si no, el sistema. */
+function applyStoredTheme() {
+  const stored = readStoredTheme();
+  const dark =
+    stored === "dark" ||
+    (stored !== "light" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.classList.toggle("dark", dark);
+}
+
 type Phase = "landing" | "quiz" | "results";
 type ResultStep =
   | "score"
@@ -55,6 +91,27 @@ export function HuellaApp() {
   const [resultStep, setResultStep] = useState<ResultStep>("score");
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [, startTransition] = useTransition();
+
+  useLayoutEffect(() => {
+    applyStoredTheme();
+    document.documentElement.classList.add("theme-ready");
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => {
+      let stored: string | null = null;
+      try {
+        stored = localStorage.getItem("theme");
+      } catch {
+        stored = null;
+      }
+      if (stored === "light" || stored === "dark") return;
+      document.documentElement.classList.toggle("dark", mq.matches);
+    };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   const visible = useMemo(
     () => visibleQuestionIndexes(answers),
@@ -190,7 +247,7 @@ export function HuellaApp() {
           className="pointer-events-none absolute inset-0 opacity-[0.45]"
           style={{
             backgroundImage:
-              "radial-gradient(circle at 1px 1px, #b8c2cc 1px, transparent 0)",
+              "radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0)",
             backgroundSize: "28px 28px",
             maskImage:
               "radial-gradient(ellipse 70% 55% at 50% 35%, black 20%, transparent 75%)",
@@ -200,7 +257,7 @@ export function HuellaApp() {
 
       {phase !== "landing" && (
         <div className="relative z-10 mx-auto w-full max-w-xl px-6 pt-8">
-          <div className="h-[2px] w-full bg-[#d5dce3]">
+          <div className="h-[2px] w-full bg-[var(--track)]">
             <div
               className="h-full bg-[var(--mark)] transition-[width] duration-500 ease-out"
               style={{ width: `${Math.round(progress * 100)}%` }}
@@ -250,25 +307,54 @@ function Landing({ onStart }: { onStart: () => void }) {
         Digital
       </h1>
       <div className="fade-in-late mx-auto mt-8 h-px w-16 origin-center bg-[var(--mark)] line-draw" />
-      <p className="fade-in-late mx-auto mt-10 max-w-md text-lg leading-relaxed text-[#3d4650] sm:text-xl">
+      <p className="fade-in-late mx-auto mt-10 max-w-md text-lg leading-relaxed text-[var(--copy)] sm:text-xl">
         Cada app, cuenta y clic deja rastros: quién eres, dónde estás y qué te
         interesa. Esa es tu{" "}
         <span className="font-medium text-foreground">huella digital</span> —
         y casi siempre viaja más lejos de lo que imaginas.
       </p>
       <div className="fade-in-later mt-14 flex flex-col items-center gap-4">
-        <Button
-          size="lg"
-          onClick={onStart}
-          className="h-12 min-w-[200px] rounded-sm bg-foreground px-8 text-base font-medium tracking-wide text-background transition-transform hover:bg-foreground/90 active:scale-[0.98]"
-        >
-          Empezar test
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            size="lg"
+            onClick={onStart}
+            className="h-12 min-w-[200px] rounded-sm bg-foreground px-8 text-base font-medium tracking-wide text-background transition-[transform,background-color,color] hover:bg-foreground/90 active:scale-[0.98]"
+          >
+            Empezar test
+          </Button>
+          <ThemeToggle />
+        </div>
         <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
           Guardamos tus respuestas de forma anónima.
         </p>
       </div>
     </main>
+  );
+}
+
+function ThemeToggle() {
+  function toggle() {
+    const next = document.documentElement.classList.contains("dark")
+      ? "light"
+      : "dark";
+    document.documentElement.classList.toggle("dark", next === "dark");
+    try {
+      localStorage.setItem(THEME_KEY, next);
+    } catch {
+      /* almacenamiento bloqueado: el tema igual cambia en esta visita */
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label="Cambiar entre tema claro y oscuro"
+      className="relative grid size-12 shrink-0 place-items-center rounded-sm border border-border bg-transparent text-foreground hover:border-foreground/40"
+    >
+      <Sun className="col-start-1 row-start-1 size-5 transition-all duration-300 ease-out dark:pointer-events-none dark:scale-0 dark:rotate-90 dark:opacity-0" />
+      <Moon className="col-start-1 row-start-1 size-5 scale-0 -rotate-90 opacity-0 transition-all duration-300 ease-out dark:scale-100 dark:rotate-0 dark:opacity-100" />
+    </button>
   );
 }
 
@@ -534,7 +620,7 @@ function Results({
           <h1 className="mt-3 font-display text-2xl tracking-tight">
             {result.label}
           </h1>
-          <p className="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-[#3d4650]">
+          <p className="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-[var(--copy)]">
             {result.summary}
           </p>
           <p className="mt-4 text-xs tracking-wide text-muted-foreground uppercase">
@@ -579,7 +665,7 @@ function Results({
           <h1 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">
             Tú frente al promedio
           </h1>
-          <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-[#3d4650]">
+          <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-[var(--copy)]">
             Comparación orientativa con el promedio de uso diario de redes
             sociales en Latinoamérica y España.
           </p>
@@ -598,7 +684,7 @@ function Results({
           />
         </section>
 
-        <p className="fade-in-later mt-8 text-[15px] leading-relaxed text-[#3d4650]">
+        <p className="fade-in-later mt-8 text-[15px] leading-relaxed text-[var(--copy)]">
           {c.blurb}
         </p>
 
@@ -670,7 +756,7 @@ function Results({
             Consejos personalizados
           </h1>
           {tipGroups.length > 0 && (
-            <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-[#3d4650]">
+            <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-[var(--copy)]">
               Elige alguno de estos cambios para empezar
             </p>
           )}
@@ -684,7 +770,7 @@ function Results({
                   <h2 className="text-xs font-medium tracking-[0.14em] text-[var(--mark)] uppercase">
                     Redes sociales
                   </h2>
-                  <p className="mt-3 text-[15px] leading-relaxed text-[#3d4650]">
+                  <p className="mt-3 text-[15px] leading-relaxed text-[var(--copy)]">
                     {watchNote}
                   </p>
                 </div>
@@ -695,13 +781,13 @@ function Results({
                   {group.section}
                 </h2>
                 {group.section === "Redes sociales" && watchNote && (
-                  <p className="mt-3 text-[15px] leading-relaxed text-[#3d4650]">
+                  <p className="mt-3 text-[15px] leading-relaxed text-[var(--copy)]">
                     {watchNote}
                   </p>
                 )}
                 <ul
                   className={cn(
-                    "list-disc space-y-2.5 pl-5 text-[15px] leading-relaxed text-[#3d4650]",
+                    "list-disc space-y-2.5 pl-5 text-[15px] leading-relaxed text-[var(--copy)]",
                     group.section === "Redes sociales" && watchNote
                       ? "mt-4"
                       : "mt-3",
@@ -725,7 +811,7 @@ function Results({
           )}
         >
           {hasAdviceContent && (
-            <p className="max-w-sm text-center text-sm leading-relaxed text-[#3d4650]">
+            <p className="max-w-sm text-center text-sm leading-relaxed text-[var(--copy)]">
               Cada pequeño cambio suma. Vuelve cuando quieras y mide de nuevo
               cómo va tu huella.
             </p>
@@ -845,7 +931,7 @@ function TutorialStep({
         <h1 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">
           Tutorial — {tutorial.title}
         </h1>
-        <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-[#3d4650]">
+        <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-[var(--copy)]">
           {tutorial.intro}
         </p>
       </header>
@@ -858,7 +944,7 @@ function TutorialStep({
             </span>
             <div>
               <p className="font-medium tracking-tight">{s.title}</p>
-              <p className="mt-1 text-[15px] leading-relaxed text-[#3d4650]">
+              <p className="mt-1 text-[15px] leading-relaxed text-[var(--copy)]">
                 {s.detail}
               </p>
             </div>
@@ -867,7 +953,7 @@ function TutorialStep({
       </ol>
 
       <footer className="mt-14 flex flex-col items-center gap-4 border-t border-border py-8">
-        <p className="max-w-sm text-center text-[15px] leading-relaxed text-[#3d4650]">
+        <p className="max-w-sm text-center text-[15px] leading-relaxed text-[var(--copy)]">
           {nextLevel.before}
           <a
             href={nextLevel.href}
@@ -934,7 +1020,7 @@ function DestinationsStep({
         <h1 className="font-display text-3xl tracking-tight sm:text-4xl">
           A dónde van tus datos
         </h1>
-        <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-[#3d4650]">
+        <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-[var(--copy)]">
           Según tus respuestas, estas son las empresas que más acumulan tu
           rastro — redes, login, celular, nube e IA.
         </p>
@@ -944,7 +1030,7 @@ function DestinationsStep({
         {destinations.map((n) => (
           <li key={n.id}>
             <p className="font-display text-lg tracking-tight">{n.name}</p>
-            <p className="mt-1 text-[15px] leading-relaxed text-[#3d4650]">
+            <p className="mt-1 text-[15px] leading-relaxed text-[var(--copy)]">
               {n.note}
             </p>
           </li>
@@ -1054,7 +1140,7 @@ function StatBlock({
               <span className="text-xs text-muted-foreground">{userSub}</span>
             )}
           </div>
-          <div className="h-2 w-full bg-[#d5dce3]">
+          <div className="h-2 w-full bg-[var(--track)]">
             <div
               className="h-full bg-[var(--mark)] transition-[width] duration-700 ease-out"
               style={{ width: `${userPct}%` }}
@@ -1063,7 +1149,7 @@ function StatBlock({
         </div>
         <div>
           <div className="mb-1.5 text-sm text-muted-foreground">{avgLabel}</div>
-          <div className="h-2 w-full bg-[#d5dce3]">
+          <div className="h-2 w-full bg-[var(--track)]">
             <div
               className="h-full bg-foreground/35 transition-[width] duration-700 ease-out"
               style={{ width: `${avgPct}%` }}
@@ -1071,7 +1157,7 @@ function StatBlock({
           </div>
         </div>
       </div>
-      <p className="mt-4 text-[15px] leading-relaxed text-[#3d4650]">
+      <p className="mt-4 text-[15px] leading-relaxed text-[var(--copy)]">
         {verdict}
       </p>
     </div>
