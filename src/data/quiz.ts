@@ -1335,7 +1335,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
           ? " está apagada, tu "
           : ", tu ",
         L("proveedor de internet", EXPLAIN.isp),
-        " ve qué sitios visitás. Instalá Proton VPN, Surfshark o Mullvad y dejala conectada siempre. En Android: Ajustes > Red e internet > VPN. En iPhone: Ajustes > General > VPN y gestión de dispositivos.",
+        " ve qué sitios visitás. Instalá Mullvad, Proton VPN o Surfshark y dejala conectada siempre. En Android: Ajustes > Red e internet > VPN. En iPhone: Ajustes > General > VPN y gestión de dispositivos.",
       ]),
     );
   }
