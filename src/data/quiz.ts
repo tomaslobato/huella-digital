@@ -1045,21 +1045,21 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   if (networkIds.includes("tiktok")) {
     tips.push(
       tip("networks", [
-        "TikTok > Ajustes y privacidad > Privacidad. Activá Cuenta privada y desactivá Sincronizar contactos. En Anuncios, desactivá los anuncios personalizados.",
+        "Usás TikTok: Ajustes y privacidad > Privacidad. Activá Cuenta privada y desactivá Sincronizar contactos. En Anuncios, desactivá los anuncios personalizados.",
       ]),
     );
   }
   if (networkIds.includes("instagram")) {
     tips.push(
       tip("networks", [
-        "Instagram > Configuración y actividad > Centro de cuentas > Tu información y tus permisos > Tu actividad fuera de las tecnologías de Meta. Desconectá la actividad futura. En Privacidad, desactivá Sugerencias a contactos.",
+        "Usás Instagram: Configuración y actividad > Centro de cuentas > Tu información y tus permisos > Tu actividad fuera de las tecnologías de Meta. Desconectá la actividad futura. En Privacidad, desactivá Sugerencias a contactos.",
       ]),
     );
   }
   if (networkIds.includes("facebook")) {
     tips.push(
       tip("networks", [
-        "Facebook > Configuración y privacidad > Configuración > Preferencias de anuncios. Desactivá los anuncios a partir de datos de socios. En el Centro de cuentas, desconectá la actividad fuera de Meta.",
+        "Usás Facebook: Configuración y privacidad > Configuración > Preferencias de anuncios. Desactivá los anuncios a partir de datos de socios. En el Centro de cuentas, desconectá la actividad fuera de Meta.",
       ]),
     );
   }
@@ -1068,7 +1068,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       tip(
         "networks",
         [
-          "Telegram > Ajustes > Privacidad y seguridad. Desactivá Sincronizar contactos. En Número de teléfono, elegí Nadie.",
+          "Usás Telegram: Ajustes > Privacidad y seguridad. Desactivá Sincronizar contactos. En Número de teléfono, elegí Nadie.",
         ],
         "Mensajería",
       ),
@@ -1077,21 +1077,21 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   if (networkIds.includes("youtube")) {
     tips.push(
       tip("networks", [
-        "Entrá a myactivity.google.com. Pausá el Historial de YouTube y activá el borrado automático.",
+        "Usás YouTube: entrá a myactivity.google.com. Pausá el Historial de YouTube y activá el borrado automático.",
       ]),
     );
   }
   if (networkIds.includes("x")) {
     tips.push(
       tip("networks", [
-        "X > Configuración y privacidad > Privacidad y seguridad > Privacidad. Desactivá la ubicación precisa. En Preferencias de anuncios, desactivá la personalización.",
+        "Usás X: Configuración y privacidad > Privacidad y seguridad > Privacidad. Desactivá la ubicación precisa. En Preferencias de anuncios, desactivá la personalización.",
       ]),
     );
   }
   if (networkIds.includes("reddit")) {
     tips.push(
       tip("networks", [
-        "Reddit > Configuración > Cuenta. Desactivá Personalizar anuncios.",
+        "Usás Reddit: Configuración > Cuenta. Desactivá Personalizar anuncios.",
       ]),
     );
   }
@@ -1105,37 +1105,46 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     tips.push(
       tip("time", [
         phone === "iphone"
-          ? `Ajustes > Tiempo en pantalla > Límites de uso de apps.${cap}`
-          : `Ajustes > Bienestar digital y controles parentales > Panel > límites de la app.${cap}`,
+          ? `Usás iPhone: Ajustes > Tiempo en pantalla > Límites de uso de apps.${cap}`
+          : `Usás Android: Ajustes > Bienestar digital y controles parentales > Panel > límites de la app.${cap}`,
       ]),
     );
   }
 
   if (typeof answers.publish === "string" && answers.publish !== "") {
     const bits: string[] = [];
-    if (networkIds.includes("instagram") || networkIds.includes("facebook")) {
+    if (networkIds.includes("instagram")) {
       bits.push(
-        "Centro de cuentas > Preferencias de anuncios: desactivá los anuncios personalizados.",
+        "Usás Instagram: Centro de cuentas > Preferencias de anuncios: desactivá los anuncios personalizados.",
+      );
+    }
+    if (networkIds.includes("facebook")) {
+      bits.push(
+        "Usás Facebook: Centro de cuentas > Preferencias de anuncios: desactivá los anuncios personalizados.",
       );
     }
     if (networkIds.includes("tiktok")) {
-      bits.push("TikTok > Anuncios: desactivá los anuncios personalizados.");
+      bits.push(
+        "Usás TikTok: Anuncios: desactivá los anuncios personalizados.",
+      );
     }
     if (networkIds.includes("x")) {
-      bits.push("X > Preferencias de anuncios: desactivá la personalización.");
+      bits.push(
+        "Usás X: Preferencias de anuncios: desactivá la personalización.",
+      );
     }
     if (networkIds.includes("youtube")) {
       bits.push(
-        "YouTube > Historial > pausá el historial y desactivá los anuncios personalizados.",
+        "Usás YouTube: Historial > pausá el historial y desactivá los anuncios personalizados.",
       );
     }
     if (bits.length === 0 && networkIds.length > 0) {
       bits.push(
-        "En la configuración de cada red, desactivá los anuncios personalizados.",
+        "En cada red que usás: desactivá los anuncios personalizados.",
       );
     }
     if (bits.length > 0) {
-      tips.push(tip("publish", [bits.join(" ")]));
+      for (const bit of bits) tips.push(tip("publish", [bit]));
     }
   }
 
@@ -1186,28 +1195,28 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   if (logins.includes("google")) {
     tips.push(
       tip("login", [
-        "Entrá a myaccount.google.com > Datos y privacidad > Apps y servicios de terceros. Sacá las apps que no uses.",
+        "Usás “Continuar con Google”: entrá a myaccount.google.com > Datos y privacidad > Apps y servicios de terceros. Sacá las apps que no uses.",
       ]),
     );
   }
   if (logins.includes("facebook")) {
     tips.push(
       tip("login", [
-        "Facebook > Configuración y privacidad > Configuración > Permisos > Apps y sitios web. Quitá las apps que no uses.",
+        "Usás “Continuar con Facebook”: Configuración y privacidad > Configuración > Permisos > Apps y sitios web. Quitá las apps que no uses.",
       ]),
     );
   }
   if (logins.includes("apple")) {
     tips.push(
       tip("login", [
-        "Ajustes > [tu nombre] > Inicio de sesión con Apple. En cada app, activá Ocultar mi correo.",
+        "Usás “Inicio de sesión con Apple”: Ajustes > [tu nombre] > Inicio de sesión con Apple. En cada app, activá Ocultar mi correo.",
       ]),
     );
   }
   if (logins.includes("email-same")) {
     tips.push(
       tip("login", [
-        "No uses el mismo correo para entrar en todos los sitios. En cada alta nueva, usá un alias distinto.",
+        "Usás el mismo correo en todos lados: no lo uses para entrar en todos los sitios. En cada alta nueva, usá un alias distinto.",
       ]),
     );
   }
@@ -1220,21 +1229,21 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   if (answers.email === "gmail") {
     tips.push(
       tip("email", [
-        "Gmail > Configuración > Ver todos los ajustes > General. Desactivá Funciones inteligentes y personalización, y Funciones inteligentes en otros productos de Google.",
+        "Usás Gmail: Configuración > Ver todos los ajustes > General. Desactivá Funciones inteligentes y personalización, y Funciones inteligentes en otros productos de Google.",
         ...mailFarther,
       ]),
     );
   } else if (answers.email === "outlook") {
     tips.push(
       tip("email", [
-        "Outlook > Configuración > General > Privacidad. Desactivá las experiencias conectadas. En account.microsoft.com/privacy, desactivá los anuncios personalizados.",
+        "Usás Outlook: Configuración > General > Privacidad. Desactivá las experiencias conectadas. En account.microsoft.com/privacy, desactivá los anuncios personalizados.",
         ...mailFarther,
       ]),
     );
   } else if (answers.email === "popular") {
     tips.push(
       tip("email", [
-        "En los ajustes del correo, desactivá el análisis del contenido y los anuncios personalizados.",
+        "Usás otro correo popular: en los ajustes del correo, desactivá el análisis del contenido y los anuncios personalizados.",
         ...mailFarther,
       ]),
     );
@@ -1243,7 +1252,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   if (answers.os === "windows") {
     tips.push(
       tip("os", [
-        "Configuración > Privacidad y seguridad > General. Desactivá el ",
+        "Usás Windows: Configuración > Privacidad y seguridad > General. Desactivá el ",
         L("ID de publicidad", EXPLAIN.adId),
         ". En Diagnósticos y comentarios, elegí Datos de diagnóstico necesarios y desactivá Experiencias personalizadas.",
       ]),
@@ -1251,7 +1260,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   } else if (answers.os === "macos") {
     tips.push(
       tip("os", [
-        "Ajustes del Sistema > Privacidad y seguridad > Análisis y mejoras. Desactivá Compartir análisis del Mac y Compartir con desarrolladores. En Publicidad de Apple, desactivá Anuncios personalizados.",
+        "Usás macOS: Ajustes del Sistema > Privacidad y seguridad > Análisis y mejoras. Desactivá Compartir análisis del Mac y Compartir con desarrolladores. En Publicidad de Apple, desactivá Anuncios personalizados.",
       ]),
     );
   }
@@ -1259,25 +1268,25 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   if (browser === "chrome") {
     tips.push(
       tip("browser", [
-        "Chrome > Configuración > Tú y Google > Sincronización y servicios de Google. Desactivá la sincronización y Ayudar a mejorar las funciones y el rendimiento de Chrome. En Privacidad y seguridad > Privacidad de anuncios, desactivá los temas de anuncios. Si querés ir más lejos, pasate a Firefox o Brave.",
+        "Usás Chrome: Configuración > Tú y Google > Sincronización y servicios de Google. Desactivá la sincronización y Ayudar a mejorar las funciones y el rendimiento de Chrome. En Privacidad y seguridad > Privacidad de anuncios, desactivá los temas de anuncios. Si querés ir más lejos, pasate a Firefox o Brave.",
       ]),
     );
   } else if (browser === "edge") {
     tips.push(
       tip("browser", [
-        "Edge > Configuración > Privacidad, búsqueda y servicios. Elegí Prevención de seguimiento: Estricta. Desactivá la personalización de anuncios y la sincronización. Si querés ir más lejos, pasate a Firefox o Brave.",
+        "Usás Edge: Configuración > Privacidad, búsqueda y servicios. Elegí Prevención de seguimiento: Estricta. Desactivá la personalización de anuncios y la sincronización. Si querés ir más lejos, pasate a Firefox o Brave.",
       ]),
     );
   } else if (browser === "safari") {
     tips.push(
       tip("browser", [
-        "Ajustes > Safari. Activá Impedir seguimiento entre sitios. Ajustes > [tu nombre] > iCloud > activá Relé privado.",
+        "Usás Safari: Ajustes > Safari. Activá Impedir seguimiento entre sitios. Ajustes > [tu nombre] > iCloud > activá Relé privado.",
       ]),
     );
   } else if (browser === "firefox") {
     tips.push(
       tip("browser", [
-        "Firefox > Ajustes > Privacidad y seguridad. Elegí Protección contra ",
+        "Usás Firefox: Ajustes > Privacidad y seguridad. Elegí Protección contra ",
         L("rastreo", EXPLAIN.tracker),
         " mejorada: Estricta. Desactivá Enviar datos técnicos y de interacción a Mozilla.",
       ]),
@@ -1285,7 +1294,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   } else if (browser === "brave") {
     tips.push(
       tip("browser", [
-        "Brave > Ajustes > Escudos. Dejá el bloqueo de ",
+        "Usás Brave: Ajustes > Escudos. Dejá el bloqueo de ",
         L("rastreadores", EXPLAIN.tracker),
         " y anuncios en Agresivo.",
       ]),
@@ -1298,8 +1307,8 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     tips.push(
       tip("browser", [
         other
-          ? `En ${other}, desactivá la sincronización de la cuenta y el envío de datos de uso. Activá el bloqueo de `
-          : "En el navegador, desactivá la sincronización de la cuenta y el envío de datos de uso. Activá el bloqueo de ",
+          ? `Usás ${other}: desactivá la sincronización de la cuenta y el envío de datos de uso. Activá el bloqueo de `
+          : "Usás otro navegador: desactivá la sincronización de la cuenta y el envío de datos de uso. Activá el bloqueo de ",
         L("rastreadores", EXPLAIN.tracker),
         ".",
       ]),
@@ -1313,13 +1322,13 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   if (usesGoogleSearch) {
     tips.push(
       tip("search", [
-        "En myactivity.google.com, abrí Actividad en la Web y en aplicaciones y desactivala. Desmarcá Incluir el historial de Chrome.",
+        "Usás la Búsqueda de Google: en myactivity.google.com, abrí Actividad en la Web y en aplicaciones y desactivala. Desmarcá Incluir el historial de Chrome.",
       ]),
     );
   } else if (browser === "edge") {
     tips.push(
       tip("search", [
-        "Edge > Configuración > Privacidad, búsqueda y servicios > Barra de direcciones y búsqueda. Desactivá las sugerencias de búsqueda y los resultados de Bing personalizados.",
+        "Usás Bing: Edge > Configuración > Privacidad, búsqueda y servicios > Barra de direcciones y búsqueda. Desactivá las sugerencias de búsqueda y los resultados de Bing personalizados.",
       ]),
     );
   }
@@ -1343,7 +1352,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   if (answers["ai-daily"] && answers["ai-daily"] !== "no") {
     tips.push(
       tip("ai-daily", [
-        "En ChatGPT: Configuración > Controles de datos > desactivá Mejorar el modelo para todos. En Gemini: Actividad de las apps de Gemini > Desactivar. Borrá los chats viejos.",
+        "Usás inteligencia artificial: en ChatGPT, Configuración > Controles de datos > desactivá Mejorar el modelo para todos. En Gemini, Actividad de las apps de Gemini > Desactivar. Borrá los chats viejos.",
       ]),
     );
 
@@ -1351,14 +1360,14 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     if (aiHow.includes("study-work") || aiHow.includes("docs")) {
       tips.push(
         tip("ai-how", [
-          "Antes de pegar un texto, borrá nombres, correos y números.",
+          "Usás inteligencia artificial: antes de pegar un texto, borrá nombres, correos y números.",
         ]),
       );
     }
     if (aiHow.includes("images") || aiHow.includes("generate-media")) {
       tips.push(
         tip("ai-how", [
-          "Antes de subir una foto, sacale los ",
+          "Usás inteligencia artificial: antes de subir una foto, sacale los ",
           L("metadatos", EXPLAIN.metadata),
           " y recortá documentos y caras.",
         ]),
@@ -1367,14 +1376,14 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     if (aiHow.includes("voice")) {
       tips.push(
         tip("ai-how", [
-          "En el asistente de voz, desactivá Guardar actividad de audio y Mejorar el servicio con tus grabaciones.",
+          "Usás inteligencia artificial: en el asistente de voz, desactivá Guardar actividad de audio y Mejorar el servicio con tus grabaciones.",
         ]),
       );
     }
     if (aiHow.includes("life") || answers["ai-personal"] === "a-lot" || answers["ai-personal"] === "therapist" || answers["ai-personal"] === "some") {
       tips.push(
         tip("ai-personal", [
-          "No escribas nombre, dirección ni datos de salud. Borrá los chats que ya los tengan.",
+          "Usás inteligencia artificial: no escribas nombre, dirección ni datos de salud. Borrá los chats que ya los tengan.",
         ]),
       );
     }
@@ -1382,7 +1391,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
 
   if (phone === "iphone") {
     const parts: TipPart[] = [
-      "Ajustes > Privacidad y seguridad > Seguimiento. Desactivá Permitir que las apps soliciten seguimiento.",
+      "Usás iPhone: Ajustes > Privacidad y seguridad > Seguimiento. Desactivá Permitir que las apps soliciten seguimiento.",
     ];
     if (!photos.includes("icloud")) {
       parts.push(
@@ -1394,7 +1403,9 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     tips.push(tip("phone", parts));
   } else if (phone === "samsung" || phone === "android-other") {
     const parts: TipPart[] = [
-      "Ajustes > Seguridad y privacidad > Privacidad > Controles de privacidad > Anuncios. Tocá Eliminar ",
+      phone === "samsung"
+        ? "Usás Samsung: Ajustes > Seguridad y privacidad > Privacidad > Controles de privacidad > Anuncios. Tocá Eliminar "
+        : "Usás Android: Ajustes > Seguridad y privacidad > Privacidad > Controles de privacidad > Anuncios. Tocá Eliminar ",
       L("ID de publicidad", EXPLAIN.adId),
       ". Ajustes > Google > Gestionar tu cuenta de Google > Datos y privacidad > Configuración del historial. Desactivá Cronología y Actividad en la Web y en aplicaciones.",
     ];
@@ -1711,7 +1722,7 @@ function buildPhotoAdvice(photos: string | string[] | undefined): Tip[] {
   if (hasGoogle) {
     tips.push(
       tip("photos", [
-        "En Ajustes, activá “Ocultar datos de ubicación de las fotos”. Desactivá la agrupación de rostros y el historial de ubicaciones.",
+        "Usás Google Fotos: en Ajustes, activá “Ocultar datos de ubicación de las fotos”. Desactivá la agrupación de rostros y el historial de ubicaciones.",
         ...farther,
       ]),
     );
@@ -1719,7 +1730,7 @@ function buildPhotoAdvice(photos: string | string[] | undefined): Tip[] {
   if (hasIcloud) {
     tips.push(
       tip("photos", [
-        "Ajustes > [tu nombre] > iCloud > ",
+        "Usás iCloud: Ajustes > [tu nombre] > iCloud > ",
         L("Protección de datos avanzada", EXPLAIN.adp),
         ": activala. Cifra de ",
         L("extremo a extremo", EXPLAIN.e2ee),
@@ -1731,7 +1742,7 @@ function buildPhotoAdvice(photos: string | string[] | undefined): Tip[] {
   if (hasOnedrive) {
     tips.push(
       tip("photos", [
-        "OneDrive > Configuración > Cuentas > Elegir carpetas. Sacá las fotos de la sincronización. En onedrive.live.com > Configuración > Opciones, desactivá el etiquetado de fotos.",
+        "Usás OneDrive: Configuración > Cuentas > Elegir carpetas. Sacá las fotos de la sincronización. En onedrive.live.com > Configuración > Opciones, desactivá el etiquetado de fotos.",
         ...farther,
       ]),
     );
@@ -1739,7 +1750,7 @@ function buildPhotoAdvice(photos: string | string[] | undefined): Tip[] {
   if (hasOther) {
     tips.push(
       tip("photos", [
-        "En los ajustes del servicio, desactivá el análisis de fotos y el uso para mejorar el producto.",
+        "Usás otra nube: en los ajustes del servicio, desactivá el análisis de fotos y el uso para mejorar el producto.",
         ...farther,
       ]),
     );
