@@ -70,7 +70,7 @@ export const questions: Question[] = [
   },
   {
     id: "publish",
-    title: "¿Con qué frecuencia le das contenido nuevo a las redes?",
+    title: "¿Con qué frecuencia subís contenido a redes?",
     hint: "Posts, stories, reels… lo que las empresas guardan de ti.",
     type: "single",
     skipIf: (a) => {
@@ -193,6 +193,20 @@ export const questions: Question[] = [
     ],
   },
   {
+    id: "email",
+    title: "¿Qué correo usás?",
+    hint: "La cuenta con la que leés el mail del día a día.",
+    type: "single",
+    options: [
+      // Mismo ajuste chico: ninguno de estos es un correo privado.
+      { id: "gmail", label: "Gmail", impact: -4 },
+      { id: "outlook", label: "Outlook", impact: -4 },
+      { id: "popular", label: "Otros populares", impact: -4 },
+      { id: "private", label: "Otros privados", impact: 5 },
+      { id: "proton", label: "Proton Mail", impact: 5 },
+    ],
+  },
+  {
     id: "phone",
     title: "¿Qué tipo de celular usas?",
     type: "single",
@@ -230,6 +244,18 @@ export const questions: Question[] = [
         customTextLabel: "¿Cuál?",
         customTextPlaceholder: "Ej.: Opera, Vivaldi, Orion…",
       },
+    ],
+  },
+  {
+    id: "vpn",
+    title: "¿Usás una VPN?",
+    hint: "Cifra el tráfico entre tu dispositivo y un servidor intermedio.",
+    type: "single",
+    options: [
+      // Ajuste chico: Siempre suma un poco, No resta un poco.
+      { id: "no", label: "No", impact: -3 },
+      { id: "sometimes", label: "A veces", impact: -1 },
+      { id: "always", label: "Siempre", impact: 3 },
     ],
   },
   {
@@ -497,7 +523,9 @@ const SECTION: Record<string, string> = {
   publish: "Publicaciones",
   "post-types": "Publicaciones",
   login: "Inicio de sesión",
+  email: "Correo",
   phone: "Dispositivos",
+  vpn: "VPN",
   os: "Dispositivos",
   browser: "Dispositivos",
   photos: "Tus fotos",
@@ -798,6 +826,8 @@ function buildDestinations(
   const os = typeof answers.os === "string" ? answers.os : "";
   const browser =
     typeof answers.browser === "string" ? answers.browser : "";
+  const email = typeof answers.email === "string" ? answers.email : "";
+  const vpn = typeof answers.vpn === "string" ? answers.vpn : "";
   const aiDaily =
     typeof answers["ai-daily"] === "string" ? answers["ai-daily"] : "no";
 
@@ -852,6 +882,11 @@ function buildDestinations(
       "Chrome (historial, sync y telemetría ligados a tu cuenta Google)",
     );
   }
+  if (email === "gmail") {
+    googleBits.push(
+      "Gmail (correo, contactos y el contenido de los mensajes)",
+    );
+  }
   if (googleBits.length > 0) {
     dest.push({
       id: "google",
@@ -896,6 +931,9 @@ function buildDestinations(
   if (browser === "edge") {
     microsoftBits.push("Edge (historial y sync con cuenta Microsoft)");
   }
+  if (email === "outlook") {
+    microsoftBits.push("Outlook (correo y contactos en la cuenta Microsoft)");
+  }
   if (microsoftBits.length > 0) {
     dest.push({
       id: "microsoft",
@@ -938,6 +976,25 @@ function buildDestinations(
       id: "other-cloud",
       name: "Otras nubes (Dropbox…)",
       note: "Archivos y fotos en servicios de terceros: suelen indexar contenido y quedan atados a esa cuenta.",
+    });
+  }
+
+  if (email === "popular") {
+    dest.push({
+      id: "email",
+      name: "Proveedor de correo popular",
+      note: "El correo, los contactos y, en muchos casos, el contenido de los mensajes quedan en esa empresa. No es un servicio con cifrado de extremo a extremo.",
+    });
+  }
+
+  if (vpn === "no" || vpn === "sometimes") {
+    dest.push({
+      id: "isp",
+      name: "Tu proveedor de internet (ISP)",
+      note:
+        vpn === "no"
+          ? "Sin VPN, tus datos de navegación también llegan a tu proveedor de internet: puede ver qué sitios visitás. El dominio de cada conexión queda en sus registros, aunque el contenido HTTPS vaya cifrado."
+          : "Como la VPN no está siempre activa, el resto del tiempo tus datos de navegación también llegan a tu proveedor de internet: puede ver qué sitios visitás.",
     });
   }
 
@@ -1211,6 +1268,37 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     }
   }
 
+  {
+    const privateMail =
+      "Pasate a Proton Mail o a un correo privado similar, con cifrado de extremo a extremo.";
+    switch (answers.email) {
+      case "gmail":
+        tips.push(
+          tip(
+            "email",
+            `Gmail no es un correo privado: Google puede leer y analizar tus mensajes. ${privateMail}`,
+          ),
+        );
+        break;
+      case "outlook":
+        tips.push(
+          tip(
+            "email",
+            `Outlook no es un correo privado: Microsoft puede leer y analizar tus mensajes. ${privateMail}`,
+          ),
+        );
+        break;
+      case "popular":
+        tips.push(
+          tip(
+            "email",
+            `Los correos de proveedores populares no están pensados como privados: el proveedor puede leer o analizar tus mensajes. ${privateMail}`,
+          ),
+        );
+        break;
+    }
+  }
+
   switch (answers.os) {
     case "linux":
       break;
@@ -1275,6 +1363,19 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       );
       break;
     }
+  }
+
+  if (answers.vpn === "no" || answers.vpn === "sometimes") {
+    const lead =
+      answers.vpn === "no"
+        ? "Si no usás una VPN, tus datos de navegación también van a tu proveedor de internet (ISP): puede ver qué sitios visitás."
+        : "Si la VPN solo la usás a veces, el resto del tiempo tus datos de navegación también van a tu proveedor de internet (ISP): puede ver qué sitios visitás.";
+    tips.push(
+      tip(
+        "vpn",
+        `${lead} Usá una VPN de confianza, como Proton VPN, Surfshark u otra opción segura y de buena reputación (por ejemplo, Mullvad).`,
+      ),
+    );
   }
 
   if (answers["ai-daily"] && answers["ai-daily"] !== "no") {
@@ -1420,6 +1521,110 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   return tips;
 }
 
+/**
+ * Rutas de Android de base (Pixel / Android 14–16), en el orden en que se tocan.
+ * En Samsung el gestor de permisos se llama Administrador de permisos; el resto coincide.
+ */
+function baseAndroidSteps(skin: "stock" | "samsung"): TutorialStep[] {
+  const permissionPath =
+    skin === "samsung"
+      ? "Abrí Ajustes > Seguridad y privacidad > Privacidad > Administrador de permisos (en Android de base se llama Gestor de permisos)."
+      : "Abrí Ajustes > Seguridad y privacidad > Privacidad > Gestor de permisos.";
+
+  return [
+    {
+      title: "Gestor de permisos",
+      detail: `${permissionPath} Tocá Ubicación, después Contactos, Micrófono, Cámara, Fotos y vídeos y SMS. En cada lista, entrá a las apps que no necesitan ese dato y elegí No permitir. En Ubicación, dejá “Permitir solo si la aplicación está en uso” o “Preguntar siempre”, y desactivá la ubicación precisa salvo en mapas.`,
+    },
+    {
+      title: "Ubicación del teléfono",
+      detail:
+        "Abrí Ajustes > Ubicación. Si no la necesitás encendida siempre, desactivá Usar ubicación. Si la dejás activa, tocá Permisos de ubicación de las aplicaciones y aplicá el mismo criterio del paso anterior. Después entrá a Ajustes > Ubicación > Servicios de ubicación y desactivá Precisión de la ubicación (Mejorar la precisión de la ubicación), Escaneo de Wi‑Fi y Escaneo de Bluetooth.",
+    },
+    {
+      title: "Cronología y actividad de Google",
+      detail:
+        "Abrí Ajustes > Google > Gestionar tu cuenta de Google > Datos y privacidad > Configuración del historial. Tocá Cronología (antes, Historial de ubicaciones) y desactivala; si ofrece borrar las visitas guardadas, confirmá. Volvé, tocá Actividad en la Web y en Aplicaciones y elegí Desactivar (o Desactivar y eliminar actividad). Desmarcá “Incluir el historial de Chrome y la actividad de sitios, aplicaciones y dispositivos que usan los servicios de Google” y “Incluir actividad de voz y audio”.",
+    },
+    {
+      title: "Eliminar el ID de publicidad",
+      detail:
+        "Abrí Ajustes > Seguridad y privacidad > Privacidad > Controles de privacidad > Anuncios. Tocá Eliminar ID de publicidad y confirmá. Si ese menú no está, andá a Ajustes > Google > Todos los servicios > Privacidad y seguridad > Anuncios > Eliminar ID de publicidad. Sin ese identificador, las apps no pueden seguirte para anuncios personalizados.",
+    },
+    {
+      title: "Permisos de apps que no usás",
+      detail:
+        "Abrí Ajustes > Aplicaciones > Ver todas las aplicaciones. Entrá a una app que casi no abras, bajá hasta Ajustes de aplicación sin usar y activá Pausar actividad de la aplicación si no se usa. Repetilo en el resto de las apps ocasionales: Android les saca cámara, micrófono, ubicación y los demás permisos cuando pasan un tiempo sin abrirse.",
+    },
+    {
+      title: "Cámara y micrófono",
+      detail:
+        "Abrí Ajustes > Seguridad y privacidad > Privacidad > Controles de privacidad. Desactivá Acceso a la cámara y Acceso al micrófono. Mientras estén apagados, ninguna app puede usarlos aunque tenga el permiso concedido. Volvé a activarlos solo para una foto, un audio o una llamada.",
+    },
+    {
+      title: "Copia de seguridad",
+      detail:
+        "Abrí Ajustes > Google > Todos los servicios. En Copia de seguridad y restauración, tocá Copia de seguridad. Mirá qué se sube a tu cuenta de Google: Fotos y vídeos, y Datos del dispositivo (apps, SMS, contactos, historial de llamadas y ajustes). Desactivá Copia de seguridad de Google One si no querés ese respaldo, o dejala solo si la cuenta es la tuya.",
+    },
+    {
+      title: "Localizador (Encontrar mi dispositivo)",
+      detail:
+        "Abrí Ajustes > Seguridad y privacidad > Localizador. Si no aparece, probá Ajustes > Seguridad > Localizador o Ajustes > Google > Todos los servicios > Localizador: en versiones anteriores se llama Encontrar mi dispositivo. Activá Permitir que se localice el dispositivo para poder hacer sonar, bloquear o borrar el teléfono si lo perdés; la ubicación queda en tu cuenta de Google. Después tocá Encontrar dispositivos sin conexión y elegí Desactivado o Sin red si no querés que participe en la red de otros Android.",
+    },
+    {
+      title: "Pantalla de bloqueo y diagnóstico",
+      detail:
+        "Abrí Ajustes > Seguridad y privacidad > Más seguridad y privacidad. Tocá Notificaciones en la pantalla de bloqueo y elegí no mostrar el contenido hasta desbloquear. Volvé a esa pantalla, desactivá Uso y diagnóstico y también Personalizar con datos de apps, si está.",
+    },
+  ];
+}
+
+/** Ajustes que solo existen en One UI, después de los de Android de base. */
+function samsungOnlySteps(): TutorialStep[] {
+  return [
+    {
+      title: "Anuncios de Samsung",
+      detail:
+        "Abrí Ajustes > Seguridad y privacidad > Más ajustes de privacidad > Anuncios. Tocá Eliminar ID de publicidad y confirmá. En esa pantalla desactivá las sugerencias y la medición de anuncios, si aparecen. Este identificador es el de Samsung, aparte del de Google.",
+    },
+    {
+      title: "Diagnóstico y personalización",
+      detail:
+        "Seguí en Ajustes > Seguridad y privacidad > Más ajustes de privacidad. Desactivá Enviar datos de diagnóstico. Si ves Servicio de personalización o Personalización con datos de apps, desactivalo también: manda el uso del teléfono a Samsung o a Android para armar un perfil.",
+    },
+    {
+      title: "Cuenta Samsung",
+      detail:
+        "Abrí Ajustes > Cuentas y copia de seguridad > Administrar cuentas > Samsung account. Si el menú dice Cuentas y respaldo, es el mismo lugar. Tocá Sincronizar cuenta y desmarcá lo que no quieras subir: contactos, calendario, notas e Internet de Samsung.",
+    },
+    {
+      title: "Galaxy AI",
+      detail:
+        "Abrí Ajustes > Galaxy AI. Si no está, andá a Ajustes > Funciones avanzadas > Inteligencia avanzada. Entrá a cada función y desactivá el procesamiento en la nube y la opción de usar tus datos para mejorar los servicios.",
+    },
+    {
+      title: "Samsung Cloud",
+      detail:
+        "Abrí Ajustes > Cuentas y copia de seguridad > Samsung Cloud (o Cuentas y respaldo > Samsung Cloud). Revisá fotos, contactos y ajustes que se están sincronizando y desactivá cada ítem que no quieras en la nube de Samsung.",
+    },
+    {
+      title: "Find My Mobile",
+      detail:
+        "Abrí Ajustes > Seguridad y privacidad > Protección ante dispositivos perdidos > Find My Mobile. Si no ves ese título, buscá “Find My Mobile” o “Buscar mi móvil” en el buscador de Ajustes. Activá Permitir encontrar este teléfono solo para poder recuperarlo: la ubicación queda en tu Samsung account. Revisá Enviar la última ubicación y dejala activa únicamente en esa cuenta.",
+    },
+    {
+      title: "Carpeta segura",
+      detail:
+        "Abrí Ajustes > Seguridad y privacidad > Más ajustes de seguridad > Carpeta segura. Tocá Continuar, aceptá los permisos y elegí un PIN, patrón o contraseña distinto del desbloqueo del teléfono. Cuando termine, mové ahí las apps y los archivos sensibles. En One UI 8 podés ocultarla desde el ícono de Carpeta segura en los ajustes rápidos.",
+    },
+    {
+      title: "Apps preinstaladas",
+      detail:
+        "Abrí Ajustes > Aplicaciones > Ver todas las aplicaciones. Entrá a cada app de Samsung o de tu operador que no uses, tocá Desinstalar y, si el sistema no deja, tocá Desactivar.",
+    },
+  ];
+}
+
 const PHONE_INTRO =
   "Sigue esta guía para configurar tu teléfono mejor y aumentar tu privacidad.";
 
@@ -1473,79 +1678,19 @@ function buildPhoneTutorial(
     return {
       platform: "samsung",
       title: "Samsung",
-      intro: PHONE_INTRO,
-      steps: [
-        {
-          title: "Privacidad de One UI",
-          detail:
-            "Ajustes → Seguridad y privacidad → Privacidad. Revisa el panel de permisos y limita acceso a cámara, micrófono, ubicación y fotos.",
-        },
-        {
-          title: "Anuncios de Google y Samsung",
-          detail:
-            "Ajustes → Google → Anuncios: elimina/restablece el ID y desactiva personalización. También busca “Anuncios” o “Servicios de publicidad” de Samsung y limita el seguimiento.",
-        },
-        {
-          title: "Cuenta Samsung y Galaxy AI",
-          detail:
-            "Ajustes → Cuentas → Samsung account: revisa qué se sincroniza. En funciones Galaxy AI / Inteligencia, desactiva el uso de tus datos para mejorar servicios si no lo quieres.",
-        },
-        {
-          title: "Samsung Cloud y Find My Mobile",
-          detail:
-            "Revisa qué sube Samsung Cloud (fotos, contactos, ajustes). Find My Mobile es útil, pero confirma que solo tú controlas la cuenta.",
-        },
-        {
-          title: "Carpeta segura y apps de fábrica",
-          detail:
-            "Usa Carpeta segura (Knox) para apps sensibles. Desinstala o desactiva bloat de Samsung/operador que no uses.",
-        },
-        {
-          title: "Ubicación e historial Google",
-          detail:
-            "Desactiva Historial de ubicaciones en myactivity.google.com. En Ajustes → Ubicación, deja “Solo mientras se usa” por app.",
-        },
-      ],
+      intro:
+        "Seguí los pasos en orden. Primero van los ajustes de Android de base, que también están en tu Galaxy. Después, los propios de Samsung. En cada uno está dónde tocar.",
+      steps: [...baseAndroidSteps("samsung"), ...samsungOnlySteps()],
     };
   }
 
   if (phone === "android-other") {
     return {
       platform: "android-other",
-      title: "Otro Android",
-      intro: PHONE_INTRO,
-      steps: [
-        {
-          title: "ID de publicidad de Google",
-          detail:
-            "Ajustes → Google → Anuncios (o Privacidad → Anuncios). Elimina/restablece el ID y desactiva anuncios personalizados.",
-        },
-        {
-          title: "Administrador de permisos",
-          detail:
-            "Ajustes → Privacidad / Seguridad → Permisos. Saca Ubicación, Contactos, Micrófono y Cámara a lo innecesario. Ubicación: “Solo mientras se usa”.",
-        },
-        {
-          title: "Telemetría de la marca",
-          detail:
-            "Busca “Privacidad”, “Usuario experiencia”, “Análisis” o “Mejorar servicios” en Ajustes y desactiva el envío de datos de uso a la marca.",
-        },
-        {
-          title: "Cuenta Google e historial",
-          detail:
-            "En myactivity.google.com pausa Historial de ubicaciones y Actividad en la Web. Activa borrado automático si está disponible.",
-        },
-        {
-          title: "Apps preinstaladas",
-          detail:
-            "Desinstala o desactiva apps del fabricante/operador que no uses. Menos apps = menos permisos activos.",
-        },
-        {
-          title: "Navegador, notificaciones y bloqueo",
-          detail:
-            "Prefiere Firefox/Brave o bloquea cookies de terceros. Apaga previews en pantalla bloqueada. Mantén el sistema al día con PIN/huella.",
-        },
-      ],
+      title: "Android",
+      intro:
+        "Seguí los pasos en orden. Son los menús de Android de base (Pixel y teléfonos sin capa del fabricante). En cada uno está dónde tocar.",
+      steps: baseAndroidSteps("stock"),
     };
   }
 

@@ -184,17 +184,19 @@ export function HuellaApp() {
 
   return (
     <div className="relative flex min-h-full flex-1 flex-col">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.45]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 1px 1px, #b8c2cc 1px, transparent 0)",
-          backgroundSize: "28px 28px",
-          maskImage:
-            "radial-gradient(ellipse 70% 55% at 50% 35%, black 20%, transparent 75%)",
-        }}
-      />
+      {phase === "landing" && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.45]"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, #b8c2cc 1px, transparent 0)",
+            backgroundSize: "28px 28px",
+            maskImage:
+              "radial-gradient(ellipse 70% 55% at 50% 35%, black 20%, transparent 75%)",
+          }}
+        />
+      )}
 
       {phase !== "landing" && (
         <div className="relative z-10 mx-auto w-full max-w-xl px-6 pt-8">
@@ -242,9 +244,11 @@ export function HuellaApp() {
 function Landing({ onStart }: { onStart: () => void }) {
   return (
     <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
-      <p className="fade-in font-display text-sm tracking-[0.22em] text-[var(--mark)] uppercase">
-        Huella Digital
-      </p>
+      <h1 className="fade-in font-display text-6xl leading-[0.9] tracking-[0.04em] text-[var(--mark)] uppercase sm:text-7xl">
+        Huella
+        <br />
+        Digital
+      </h1>
       <div className="fade-in-late mx-auto mt-8 h-px w-16 origin-center bg-[var(--mark)] line-draw" />
       <p className="fade-in-late mx-auto mt-10 max-w-md text-lg leading-relaxed text-[#3d4650] sm:text-xl">
         Cada app, cuenta y clic deja rastros: quién eres, dónde estás y qué te
