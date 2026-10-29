@@ -386,11 +386,30 @@ export function visibleQuestionIndexes(answers: AnswerMap): number[] {
     .map(({ i }) => i);
 }
 
+export type TipPart = string | { label: string; href: string };
+
 export type Tip = {
   from: string;
   section: string;
-  text: string;
+  parts: TipPart[];
 };
+
+/** Páginas en español que explican el término, abiertas desde el consejo. */
+export const EXPLAIN = {
+  nas: "https://es.wikipedia.org/wiki/Almacenamiento_conectado_en_red",
+  vpn: "https://es.wikipedia.org/wiki/Red_privada_virtual",
+  e2ee: "https://es.wikipedia.org/wiki/Cifrado_de_extremo_a_extremo",
+  isp: "https://es.wikipedia.org/wiki/Proveedor_de_servicios_de_internet",
+  metadata: "https://es.wikipedia.org/wiki/Metadato",
+  adId: "https://support.google.com/android/answer/13720755?hl=es",
+  adp: "https://support.apple.com/es-es/108756",
+  tracker: "https://es.wikipedia.org/wiki/Rastreador_web",
+  telemetry: "https://es.wikipedia.org/wiki/Telemetr%C3%ADa",
+} as const;
+
+function L(label: string, href: string): TipPart {
+  return { label, href };
+}
 
 export type TutorialStep = {
   title: string;
@@ -524,18 +543,19 @@ const SECTION: Record<string, string> = {
   "post-types": "Publicaciones",
   login: "Inicio de sesión",
   email: "Correo",
-  phone: "Dispositivos",
+  phone: "Teléfono",
   vpn: "VPN",
-  os: "Dispositivos",
-  browser: "Dispositivos",
+  os: "Computadora",
+  browser: "Navegador",
+  search: "Buscador",
   photos: "Tus fotos",
   "ai-daily": "Inteligencia artificial",
   "ai-how": "Inteligencia artificial",
   "ai-personal": "Inteligencia artificial",
 };
 
-function tip(from: string, text: string): Tip {
-  return { from, section: SECTION[from] ?? from, text };
+function tip(from: string, parts: TipPart[], section?: string): Tip {
+  return { from, section: section ?? SECTION[from] ?? from, parts };
 }
 
 function asList(value: string | string[] | undefined): string[] {
@@ -726,9 +746,9 @@ function buildNetworksWatchNote(
   const lightPublish =
     publish === "occasionally" || publish === "almost-never";
 
-  if (!noNetworks && !lightPublish) return null;
+  if (noNetworks || !lightPublish) return null;
 
-  return "Aunque tengas un perfil anónimo o no publiques nada, estas empresas se alimentan de lo que mirás: cada video, me gusta y tiempo de scroll arma tu perfil publicitario.";
+  return "Pausá el historial y desactivá los anuncios personalizados en cada red, aunque no publiques.";
 }
 
 function buildComparison(answers: AnswerMap): UsageComparison {
@@ -1017,515 +1037,373 @@ function buildDestinations(
 
 function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   const tips: Tip[] = [];
+  const phone = typeof answers.phone === "string" ? answers.phone : "";
+  const browser = typeof answers.browser === "string" ? answers.browser : "";
+  const logins = asList(answers.login);
+  const photos = asList(answers.photos);
 
-  if (networkIds.length > 0) {
-    if (networkIds.includes("tiktok")) {
-      tips.push(
-        tip(
-          "networks",
-          "TikTok: poné la cuenta en privada, no sincronices contactos y limitá los anuncios personalizados.",
-        ),
-      );
-    }
-    if (networkIds.includes("instagram")) {
-      tips.push(
-        tip(
-          "networks",
-          "Instagram: desactivá la actividad fuera de Meta, limitá quién ve tus historias y apagá las sugerencias a contactos.",
-        ),
-      );
-    }
-    if (networkIds.includes("facebook")) {
-      tips.push(
-        tip(
-          "networks",
-          "Facebook: desactivá la actividad fuera de Meta, revisá quién puede ver tus publicaciones y apagá las sugerencias a contactos.",
-        ),
-      );
-    }
-    if (networkIds.includes("telegram")) {
-      tips.push(
-        tip(
-          "networks",
-          "Telegram: desactivá sincronizar contactos, revisá quién puede encontrarte por número y usá chats secretos para lo sensible.",
-        ),
-      );
-    }
-    if (networkIds.includes("youtube")) {
-      tips.push(
-        tip(
-          "networks",
-          "YouTube: pausá el historial en myactivity.google.com y activá el borrado automático cada 3 o 18 meses.",
-        ),
-      );
-    }
-    if (networkIds.includes("x")) {
-      tips.push(
-        tip(
-          "networks",
-          "X: sacá la ubicación de las publicaciones, limitá los mensajes directos y revisá la personalización de anuncios.",
-        ),
-      );
-    }
-    if (networkIds.includes("reddit")) {
-      tips.push(
-        tip(
-          "networks",
-          "Reddit: usá un nombre sin datos reales y apagá la personalización de anuncios. Si más adelante querés ir más lejos, evitá entrar con otra red social.",
-        ),
-      );
-    }
+  if (networkIds.includes("tiktok")) {
+    tips.push(
+      tip("networks", [
+        "TikTok > Ajustes y privacidad > Privacidad. Activá Cuenta privada y desactivá Sincronizar contactos. En Anuncios, desactivá los anuncios personalizados.",
+      ]),
+    );
+  }
+  if (networkIds.includes("instagram")) {
+    tips.push(
+      tip("networks", [
+        "Instagram > Configuración y actividad > Centro de cuentas > Tu información y tus permisos > Tu actividad fuera de las tecnologías de Meta. Desconectá la actividad futura. En Privacidad, desactivá Sugerencias a contactos.",
+      ]),
+    );
+  }
+  if (networkIds.includes("facebook")) {
+    tips.push(
+      tip("networks", [
+        "Facebook > Configuración y privacidad > Configuración > Preferencias de anuncios. Desactivá los anuncios a partir de datos de socios. En el Centro de cuentas, desconectá la actividad fuera de Meta.",
+      ]),
+    );
+  }
+  if (networkIds.includes("telegram")) {
+    tips.push(
+      tip(
+        "networks",
+        [
+          "Telegram > Ajustes > Privacidad y seguridad. Desactivá Sincronizar contactos. En Número de teléfono, elegí Nadie.",
+        ],
+        "Mensajería",
+      ),
+    );
+  }
+  if (networkIds.includes("youtube")) {
+    tips.push(
+      tip("networks", [
+        "Entrá a myactivity.google.com. Pausá el Historial de YouTube y activá el borrado automático.",
+      ]),
+    );
+  }
+  if (networkIds.includes("x")) {
+    tips.push(
+      tip("networks", [
+        "X > Configuración y privacidad > Privacidad y seguridad > Privacidad. Desactivá la ubicación precisa. En Preferencias de anuncios, desactivá la personalización.",
+      ]),
+    );
+  }
+  if (networkIds.includes("reddit")) {
+    tips.push(
+      tip("networks", [
+        "Reddit > Configuración > Cuenta. Desactivá Personalizar anuncios.",
+      ]),
+    );
   }
 
   if (isValidTimeAnswer(answers)) {
     const { hours } = parseTimeHours(answers);
-    if (hours <= 0) {
-      tips.push(
-        tip(
-          "time",
-          "Poco tiempo en redes: menos señales para los algoritmos. Mantené los límites de pantalla.",
-        ),
+    const cap =
+      hours > 0
+        ? ` Poné el tope por debajo de ${hours} ${hours === 1 ? "hora" : "horas"}.`
+        : " Dejá un tope bajo.";
+    tips.push(
+      tip("time", [
+        phone === "iphone"
+          ? `Ajustes > Tiempo en pantalla > Límites de uso de apps.${cap}`
+          : `Ajustes > Bienestar digital y controles parentales > Panel > límites de la app.${cap}`,
+      ]),
+    );
+  }
+
+  if (typeof answers.publish === "string" && answers.publish !== "") {
+    const bits: string[] = [];
+    if (networkIds.includes("instagram") || networkIds.includes("facebook")) {
+      bits.push(
+        "Centro de cuentas > Preferencias de anuncios: desactivá los anuncios personalizados.",
       );
-    } else if (hours <= 1) {
-      tips.push(
-        tip(
-          "time",
-          "Una hora o menos es manejable. Evitá el scroll infinito de noche.",
-        ),
+    }
+    if (networkIds.includes("tiktok")) {
+      bits.push("TikTok > Anuncios: desactivá los anuncios personalizados.");
+    }
+    if (networkIds.includes("x")) {
+      bits.push("X > Preferencias de anuncios: desactivá la personalización.");
+    }
+    if (networkIds.includes("youtube")) {
+      bits.push(
+        "YouTube > Historial > pausá el historial y desactivá los anuncios personalizados.",
       );
-    } else if (hours <= 3) {
-      tips.push(
-        tip(
-          "time",
-          "1–3 horas diarias arman un perfil muy rico. Usá límites por app y apagá las notificaciones que no necesitás.",
-        ),
+    }
+    if (bits.length === 0 && networkIds.length > 0) {
+      bits.push(
+        "En la configuración de cada red, desactivá los anuncios personalizados.",
       );
-    } else if (hours <= 5) {
-      tips.push(
-        tip(
-          "time",
-          "3–5 horas: ya estás por encima del promedio de Latinoamérica y España. Probá un tope diario y dejá el teléfono fuera del dormitorio.",
-        ),
-      );
-    } else {
-      tips.push(
-        tip(
-          "time",
-          `${hours} horas en redes es mucho rastro diario. Empezá recortando 30 minutos por día; los límites por app y la escala de grises ayudan.`,
-        ),
-      );
+    }
+    if (bits.length > 0) {
+      tips.push(tip("publish", [bits.join(" ")]));
     }
   }
 
-  switch (answers.publish) {
-    case "creator":
-      tips.push(
-        tip(
-          "publish",
-          "Como creador, separá la cuenta personal de la profesional, revisá los derechos de imagen y limitá qué datos personales aparecen en la biografía, las transmisiones en vivo y las colaboraciones.",
-        ),
-      );
-      break;
-    case "always":
-      tips.push(
-        tip(
-          "publish",
-          "Publicar a diario deja un historial denso. Podés seguir publicando: bajá un poco la frecuencia y desactivá el uso de tu actividad para personalizar anuncios.",
-        ),
-      );
-      break;
-    case "sometimes":
-      tips.push(
-        tip(
-          "publish",
-          "Aunque publiques poco, los me gusta, los guardados y el tiempo de visión también cuentan. Revisá el centro de privacidad de cada red.",
-        ),
-      );
-      break;
-    case "occasionally":
-      tips.push(
-        tip(
-          "publish",
-          "Publicar de vez en cuando igual deja historial. Pedí una copia de tus datos y borrá las publicaciones viejas que ya no quieras dejar ahí.",
-        ),
-      );
-      break;
-    case "almost-never":
-      tips.push(
-        tip(
-          "publish",
-          "Casi no publicar reduce lo que la empresa guarda de tu contenido. El scroll y las interacciones siguen contando: limitá los anuncios personalizados.",
-        ),
-      );
-      break;
+  const postTypes = asList(answers["post-types"]);
+  if (postTypes.includes("location")) {
+    tips.push(
+      tip("post-types", [
+        "Al publicar, desactivá Agregar ubicación. En la cámara del teléfono, desactivá las etiquetas de ubicación.",
+      ]),
+    );
+  }
+  if (postTypes.includes("family")) {
+    tips.push(
+      tip("post-types", [
+        "No etiquetes a familiares ni a menores. Al publicar, desactivá Agregar ubicación.",
+      ]),
+    );
+  }
+  if (postTypes.includes("face-routine")) {
+    tips.push(
+      tip("post-types", [
+        "Publicá la historia en Mejores amigos, no en Público. Desactivá Guardar en el archivo de historias.",
+      ]),
+    );
+  }
+  if (postTypes.includes("work")) {
+    tips.push(
+      tip("post-types", [
+        "Publicá el trabajo solo en la cuenta profesional. Borrá las capturas que muestren correos o tableros.",
+      ]),
+    );
+  }
+  if (postTypes.includes("opinions")) {
+    tips.push(
+      tip("post-types", [
+        "Publicá esas opiniones en la cuenta que no tenga tu nombre ni tu foto.",
+      ]),
+    );
+  }
+  if (postTypes.length === 1 && postTypes[0] === "light") {
+    tips.push(
+      tip("post-types", [
+        "Al publicar, desactivá las etiquetas de personas y de ubicación.",
+      ]),
+    );
   }
 
-  {
-    const postTypes = asList(answers["post-types"]);
-    if (postTypes.includes("location")) {
-      tips.push(
-        tip(
-          "post-types",
-          "Los check-ins y los viajes en el momento avisan dónde estás. Seguí compartiendo lugares, pero publicalos cuando ya te fuiste.",
-        ),
-      );
-    }
-    if (postTypes.includes("family")) {
-      tips.push(
-        tip(
-          "post-types",
-          "Familia y menores en fotos: pedí consentimiento, tapá caras si hace falta y evitá colegios o direcciones de fondo.",
-        ),
-      );
-    }
-    if (postTypes.includes("face-routine")) {
-      tips.push(
-        tip(
-          "post-types",
-          "La cara y la rutina alimentan el reconocimiento y los horarios. Mezclá ángulos, evitá el mismo fondo todos los días y limitá las historias que quedan guardadas.",
-        ),
-      );
-    }
-    if (postTypes.includes("work")) {
-      tips.push(
-        tip(
-          "post-types",
-          "Trabajo y clientes en redes pueden filtrar datos de terceros. Separá la cuenta personal de la profesional y borrá las capturas que muestren correos o tableros.",
-        ),
-      );
-    }
-    if (postTypes.includes("opinions")) {
-      tips.push(
-        tip(
-          "post-types",
-          "Las opiniones fuertes quedan indexadas. Si vas a debatir, usá la cuenta que tenga menos datos personales cruzados.",
-        ),
-      );
-    }
-    if (postTypes.length === 1 && postTypes[0] === "light") {
-      tips.push(
-        tip(
-          "post-types",
-          "Solo contenido sin datos tuyos: buen criterio. Evitá que otros te etiqueten con ubicación o con la cara.",
-        ),
-      );
-    }
+  if (logins.includes("google")) {
+    tips.push(
+      tip("login", [
+        "Entrá a myaccount.google.com > Datos y privacidad > Apps y servicios de terceros. Sacá las apps que no uses.",
+      ]),
+    );
+  }
+  if (logins.includes("facebook")) {
+    tips.push(
+      tip("login", [
+        "Facebook > Configuración y privacidad > Configuración > Permisos > Apps y sitios web. Quitá las apps que no uses.",
+      ]),
+    );
+  }
+  if (logins.includes("apple")) {
+    tips.push(
+      tip("login", [
+        "Ajustes > [tu nombre] > Inicio de sesión con Apple. En cada app, activá Ocultar mi correo.",
+      ]),
+    );
+  }
+  if (logins.includes("email-same")) {
+    tips.push(
+      tip("login", [
+        "No uses el mismo correo para entrar en todos los sitios. En cada alta nueva, usá un alias distinto.",
+      ]),
+    );
   }
 
-  {
-    const logins = asList(answers.login);
-    if (logins.includes("google")) {
-      tips.push(
-        tip(
-          "login",
-          "“Continuar con Google” une tu identidad entre sitios. Podés seguir usándolo: en la cuenta de Google revisá qué apps tienen acceso y sacá las que no uses. Si más adelante querés ir más lejos, creá las cuentas nuevas con un correo propio.",
-        ),
-      );
-    }
-    if (logins.includes("facebook")) {
-      tips.push(
-        tip(
-          "login",
-          "Entrar con Facebook le muestra a Meta qué otras apps usás. En la configuración de Facebook revisá las apps conectadas y sacá las que no uses. Si más adelante querés ir más lejos, pasá las cuentas importantes a un correo con contraseña propia.",
-        ),
-      );
-    }
-    if (logins.includes("apple")) {
-      tips.push(
-        tip(
-          "login",
-          "Sign in with Apple, con “ocultar mi correo”, es una buena opción. Usalo cuando te sirva y revisá en tu Apple ID qué apps quedaron vinculadas.",
-        ),
-      );
-    }
-    if (logins.includes("email-same")) {
-      tips.push(
-        tip(
-          "login",
-          "La misma contraseña en todos lados es un riesgo alto. Pasala a un gestor y activá la verificación en dos pasos en el correo.",
-        ),
-      );
-    } else if (
-      logins.includes("email-unique") &&
-      !logins.includes("manager") &&
-      !logins.includes("manager-2fa")
-    ) {
-      tips.push(
-        tip(
-          "login",
-          "Contraseñas distintas: buen piso. Sumá un gestor y la verificación en dos pasos.",
-        ),
-      );
-    }
-    // manager-2fa: sin consejo — ya está en el mejor hábito.
-    if (logins.includes("manager") && !logins.includes("manager-2fa")) {
-      tips.push(
-        tip(
-          "login",
-          "Muy bien con el gestor de contraseñas. Activá la verificación en dos pasos en el correo, los bancos y las redes cuando la app lo permita (mejor una app o una llave que el SMS).",
-        ),
-      );
-    }
+  const mailFarther: TipPart[] = [
+    " Si querés ir más lejos, pasate a Proton Mail: tiene ",
+    L("cifrado de extremo a extremo", EXPLAIN.e2ee),
+    ".",
+  ];
+  if (answers.email === "gmail") {
+    tips.push(
+      tip("email", [
+        "Gmail > Configuración > Ver todos los ajustes > General. Desactivá Funciones inteligentes y personalización, y Funciones inteligentes en otros productos de Google.",
+        ...mailFarther,
+      ]),
+    );
+  } else if (answers.email === "outlook") {
+    tips.push(
+      tip("email", [
+        "Outlook > Configuración > General > Privacidad. Desactivá las experiencias conectadas. En account.microsoft.com/privacy, desactivá los anuncios personalizados.",
+        ...mailFarther,
+      ]),
+    );
+  } else if (answers.email === "popular") {
+    tips.push(
+      tip("email", [
+        "En los ajustes del correo, desactivá el análisis del contenido y los anuncios personalizados.",
+        ...mailFarther,
+      ]),
+    );
   }
 
-  {
-    const privateMail =
-      "Si más adelante querés ir más lejos, Proton Mail u otro correo con cifrado de extremo a extremo es una alternativa.";
-    switch (answers.email) {
-      case "gmail":
-        tips.push(
-          tip(
-            "email",
-            `Podés seguir con Gmail y cerrarlo un poco: activá la verificación en dos pasos, revisá el Panel de privacidad de Google y no mandes por ahí lo más sensible. ${privateMail}`,
-          ),
-        );
-        break;
-      case "outlook":
-        tips.push(
-          tip(
-            "email",
-            `Podés seguir con Outlook y cerrarlo un poco: activá la verificación en dos pasos, revisá la privacidad de tu cuenta Microsoft y no mandes por ahí lo más sensible. ${privateMail}`,
-          ),
-        );
-        break;
-      case "popular":
-        tips.push(
-          tip(
-            "email",
-            `Podés seguir con ese correo y cerrarlo un poco: activá la verificación en dos pasos, revisá qué datos usa el proveedor para anuncios y no mandes por ahí lo más sensible. ${privateMail}`,
-          ),
-        );
-        break;
-    }
+  if (answers.os === "windows") {
+    tips.push(
+      tip("os", [
+        "Configuración > Privacidad y seguridad > General. Desactivá el ",
+        L("ID de publicidad", EXPLAIN.adId),
+        ". En Diagnósticos y comentarios, elegí Datos de diagnóstico necesarios y desactivá Experiencias personalizadas.",
+      ]),
+    );
+  } else if (answers.os === "macos") {
+    tips.push(
+      tip("os", [
+        "Ajustes del Sistema > Privacidad y seguridad > Análisis y mejoras. Desactivá Compartir análisis del Mac y Compartir con desarrolladores. En Publicidad de Apple, desactivá Anuncios personalizados.",
+      ]),
+    );
   }
 
-  switch (answers.os) {
-    case "linux":
-      break;
-    case "windows":
-      tips.push(
-        tip(
-          "os",
-          "En Windows desactivá la telemetría opcional y revisá Configuración > Privacidad y seguridad. Si más adelante querés ir más lejos, una cuenta local sincroniza menos con Microsoft.",
-        ),
-      );
-      break;
-    case "macos":
-      tips.push(
-        tip(
-          "os",
-          "En macOS revisá los permisos en Privacidad y seguridad, desactivá el análisis y Siri si no los usás, y dejá activo Relé privado si tenés iCloud+.",
-        ),
-      );
-      break;
+  if (browser === "chrome") {
+    tips.push(
+      tip("browser", [
+        "Chrome > Configuración > Tú y Google > Sincronización y servicios de Google. Desactivá la sincronización y Ayudar a mejorar las funciones y el rendimiento de Chrome. En Privacidad y seguridad > Privacidad de anuncios, desactivá los temas de anuncios. Si querés ir más lejos, pasate a Firefox o Brave.",
+      ]),
+    );
+  } else if (browser === "edge") {
+    tips.push(
+      tip("browser", [
+        "Edge > Configuración > Privacidad, búsqueda y servicios. Elegí Prevención de seguimiento: Estricta. Desactivá la personalización de anuncios y la sincronización. Si querés ir más lejos, pasate a Firefox o Brave.",
+      ]),
+    );
+  } else if (browser === "safari") {
+    tips.push(
+      tip("browser", [
+        "Ajustes > Safari. Activá Impedir seguimiento entre sitios. Ajustes > [tu nombre] > iCloud > activá Relé privado.",
+      ]),
+    );
+  } else if (browser === "firefox") {
+    tips.push(
+      tip("browser", [
+        "Firefox > Ajustes > Privacidad y seguridad. Elegí Protección contra ",
+        L("rastreo", EXPLAIN.tracker),
+        " mejorada: Estricta. Desactivá Enviar datos técnicos y de interacción a Mozilla.",
+      ]),
+    );
+  } else if (browser === "brave") {
+    tips.push(
+      tip("browser", [
+        "Brave > Ajustes > Escudos. Dejá el bloqueo de ",
+        L("rastreadores", EXPLAIN.tracker),
+        " y anuncios en Agresivo.",
+      ]),
+    );
+  } else if (browser === "other") {
+    const other =
+      typeof answers[otherTextKey("browser")] === "string"
+        ? String(answers[otherTextKey("browser")]).trim()
+        : "";
+    tips.push(
+      tip("browser", [
+        other
+          ? `En ${other}, desactivá la sincronización de la cuenta y el envío de datos de uso. Activá el bloqueo de `
+          : "En el navegador, desactivá la sincronización de la cuenta y el envío de datos de uso. Activá el bloqueo de ",
+        L("rastreadores", EXPLAIN.tracker),
+        ".",
+      ]),
+    );
   }
 
-  switch (answers.browser) {
-    case "brave":
-    case "firefox":
-      break;
-    case "safari":
-      tips.push(
-        tip(
-          "browser",
-          "En Safari activá Impedir seguimiento entre sitios y, si tenés iCloud+, Relé privado. Dejá solo las extensiones que realmente usás.",
-        ),
-      );
-      break;
-    case "chrome":
-      tips.push(
-        tip(
-          "browser",
-          "Podés seguir con Chrome: desactivá la sincronización si no la necesitás y limitá la telemetría en Privacidad y seguridad. Si más adelante querés ir más lejos, Firefox o Brave son una alternativa para el día a día.",
-        ),
-      );
-      break;
-    case "edge":
-      tips.push(
-        tip(
-          "browser",
-          "Podés seguir con Edge: desactivá la sincronización y la personalización en Privacidad. Si más adelante querés ir más lejos, Firefox o Brave son una alternativa.",
-        ),
-      );
-      break;
-    case "other": {
-      const other =
-        typeof answers[otherTextKey("browser")] === "string"
-          ? String(answers[otherTextKey("browser")]).trim()
-          : "";
-      tips.push(
-        tip(
-          "browser",
-          other
-            ? `Con ${other} podés seguir igual: revisá la sincronización, la telemetría y el bloqueo de rastreadores. Si más adelante querés ir más lejos, evitá entrar con Google o Microsoft solo por comodidad.`
-            : "En el navegador que uses, revisá la sincronización, la telemetría y sumá un bloqueador de rastreadores de confianza.",
-        ),
-      );
-      break;
-    }
+  const usesGoogleSearch =
+    browser === "chrome" ||
+    logins.includes("google") ||
+    networkIds.includes("youtube");
+  if (usesGoogleSearch) {
+    tips.push(
+      tip("search", [
+        "En myactivity.google.com, abrí Actividad en la Web y en aplicaciones y desactivala. Desmarcá Incluir el historial de Chrome.",
+      ]),
+    );
+  } else if (browser === "edge") {
+    tips.push(
+      tip("search", [
+        "Edge > Configuración > Privacidad, búsqueda y servicios > Barra de direcciones y búsqueda. Desactivá las sugerencias de búsqueda y los resultados de Bing personalizados.",
+      ]),
+    );
   }
 
   if (answers.vpn === "no" || answers.vpn === "sometimes") {
-    const lead =
-      answers.vpn === "no"
-        ? "Si no usás una VPN, tus datos de navegación también van a tu proveedor de internet (ISP): puede ver qué sitios visitás."
-        : "Si la VPN solo la usás a veces, el resto del tiempo tus datos de navegación también van a tu proveedor de internet (ISP): puede ver qué sitios visitás.";
     tips.push(
-      tip(
-        "vpn",
-        `${lead} Usá una VPN de confianza, como Proton VPN, Surfshark u otra opción segura y de buena reputación (por ejemplo, Mullvad).`,
-      ),
+      tip("vpn", [
+        answers.vpn === "sometimes"
+          ? "Cuando la "
+          : "Sin una ",
+        L("VPN", EXPLAIN.vpn),
+        answers.vpn === "sometimes"
+          ? " está apagada, tu "
+          : ", tu ",
+        L("proveedor de internet", EXPLAIN.isp),
+        " ve qué sitios visitás. Instalá Proton VPN, Surfshark o Mullvad y dejala conectada siempre. En Android: Ajustes > Red e internet > VPN. En iPhone: Ajustes > General > VPN y gestión de dispositivos.",
+      ]),
     );
   }
 
   if (answers["ai-daily"] && answers["ai-daily"] !== "no") {
-    switch (answers["ai-daily"]) {
-      case "yes-heavy":
-        tips.push(
-          tip(
-            "ai-daily",
-            "Usarla varias veces al día acumula historial en el proveedor. Desactivá “usar chats para entrenar” si la app lo permite y borrá cada tanto los hilos que ya no necesites.",
-          ),
-        );
-        break;
-      case "yes":
-        tips.push(
-          tip(
-            "ai-daily",
-            "En el uso diario, tratala como un tercero con servidores propios. Evitá pegar secretos del trabajo o datos médicos.",
-          ),
-        );
-        break;
-      case "sometimes":
-        tips.push(
-          tip(
-            "ai-daily",
-            "El uso ocasional también deja registros. Revisá la privacidad de la herramienta que más uses.",
-          ),
-        );
-        break;
-    }
+    tips.push(
+      tip("ai-daily", [
+        "En ChatGPT: Configuración > Controles de datos > desactivá Mejorar el modelo para todos. En Gemini: Actividad de las apps de Gemini > Desactivar. Borrá los chats viejos.",
+      ]),
+    );
 
-    {
-      const aiHow = asList(answers["ai-how"]);
-      if (aiHow.includes("study-work")) {
-        tips.push(
-          tip(
-            "ai-how",
-            "Para estudio o trabajo, sacá nombres, identificadores y datos de clientes antes de pegar un texto. Preferí ejemplos ficticios.",
-          ),
-        );
-      }
-      if (aiHow.includes("ideas")) {
-        tips.push(
-          tip(
-            "ai-how",
-            "Ideas y ocio: el riesgo es bajo si no mezclás datos reales. Recortá las capturas para que no se vean notificaciones ni correos.",
-          ),
-        );
-      }
-      if (aiHow.includes("life")) {
-        tips.push(
-          tip(
-            "ai-how",
-            "Para consejos de vida, salud o dinero, escribí en genérico y sin datos que te identifiquen. Si más adelante querés ir más lejos, lo íntimo conviene hablarlo con una persona.",
-          ),
-        );
-      }
-      if (aiHow.includes("docs")) {
-        tips.push(
-          tip(
-            "ai-how",
-            "Antes de pegar un documento o un correo, sacá nombres, números y datos de otras personas. Si el texto es confidencial, resumilo vos. Si más adelante querés ir más lejos, hay herramientas locales que no lo suben.",
-          ),
-        );
-      }
-      if (aiHow.includes("images")) {
-        tips.push(
-          tip(
-            "ai-how",
-            "Antes de subir una foto a una IA, recortá documentos y caras que no quieras mostrar y sacá los metadatos. Si la imagen es muy sensible, mejor no la subas.",
-          ),
-        );
-      }
-      if (aiHow.includes("generate-media")) {
-        tips.push(
-          tip(
-            "ai-how",
-            "Al generar imágenes o audio, no subas fotos de personas reales sin permiso y cuidá que el pedido no lleve datos que las identifiquen.",
-          ),
-        );
-      }
-      if (aiHow.includes("voice")) {
-        tips.push(
-          tip(
-            "ai-how",
-            "Los asistentes de voz escuchan el entorno. Revisá el historial de grabaciones y desactivá “mejorar el servicio” con tus audios.",
-          ),
-        );
-      }
-      if (aiHow.includes("other")) {
-        const other =
-          typeof answers[otherTextKey("ai-how")] === "string"
-            ? String(answers[otherTextKey("ai-how")]).trim()
-            : "";
-        tips.push(
-          tip(
-            "ai-how",
-            other
-              ? `Sobre “${other}”: la misma regla que en el resto. Sacá nombres y documentos, y no pegues datos que no quieras dejar en el proveedor.`
-              : "En cualquier otro uso, no pegues datos que te identifiquen y revisá si el proveedor entrena con tus chats.",
-          ),
-        );
-      }
+    const aiHow = asList(answers["ai-how"]);
+    if (aiHow.includes("study-work") || aiHow.includes("docs")) {
+      tips.push(
+        tip("ai-how", [
+          "Antes de pegar un texto, borrá nombres, correos y números.",
+        ]),
+      );
     }
-
-    switch (answers["ai-personal"]) {
-      case "a-lot":
-        tips.push(
-          tip(
-            "ai-personal",
-            "Contarle tu vida a la IA arma un archivo íntimo en el proveedor. En los chats nuevos evitá nombres y datos identificables, y borrá los hilos viejos que ya no necesites.",
-          ),
-        );
-        break;
-      case "therapist":
-        tips.push(
-          tip(
-            "ai-personal",
-            "Una IA no reemplaza a un profesional ni es confidencial. Para lo emocional, una persona es mejor; si igual la usás, no pongas datos que te identifiquen.",
-          ),
-        );
-        break;
-      case "some":
-        tips.push(
-          tip(
-            "ai-personal",
-            "Los “se me escapó” suman. Antes de enviar, reemplazá los nombres por iniciales y sacá direcciones, documento y teléfonos.",
-          ),
-        );
-        break;
-      case "careful":
-        break;
-      case "never":
-        tips.push(
-          tip(
-            "ai-personal",
-            "Solo consultas genéricas: excelente. Mantené esa regla aunque el chat parezca privado.",
-          ),
-        );
-        break;
+    if (aiHow.includes("images") || aiHow.includes("generate-media")) {
+      tips.push(
+        tip("ai-how", [
+          "Antes de subir una foto, sacale los ",
+          L("metadatos", EXPLAIN.metadata),
+          " y recortá documentos y caras.",
+        ]),
+      );
+    }
+    if (aiHow.includes("voice")) {
+      tips.push(
+        tip("ai-how", [
+          "En el asistente de voz, desactivá Guardar actividad de audio y Mejorar el servicio con tus grabaciones.",
+        ]),
+      );
+    }
+    if (aiHow.includes("life") || answers["ai-personal"] === "a-lot" || answers["ai-personal"] === "therapist" || answers["ai-personal"] === "some") {
+      tips.push(
+        tip("ai-personal", [
+          "No escribas nombre, dirección ni datos de salud. Borrá los chats que ya los tengan.",
+        ]),
+      );
     }
   }
 
-  const photos = asList(answers.photos);
-  if (answers.phone === "iphone" && !photos.includes("icloud")) {
-    tips.push(
-      tip(
-        "phone",
-        "Si el iPhone se respalda en iCloud, activá la Protección avanzada de datos (ADP). Cifra de extremo a extremo las fotos y la mayoría de los datos de iCloud, así Apple no puede leerlos. La encontrás en Ajustes > [tu nombre] > iCloud > Protección avanzada de datos.",
-      ),
-    );
+  if (phone === "iphone") {
+    const parts: TipPart[] = [
+      "Ajustes > Privacidad y seguridad > Seguimiento. Desactivá Permitir que las apps soliciten seguimiento.",
+    ];
+    if (!photos.includes("icloud")) {
+      parts.push(
+        " Ajustes > [tu nombre] > iCloud > ",
+        L("Protección de datos avanzada", EXPLAIN.adp),
+        ": activala.",
+      );
+    }
+    tips.push(tip("phone", parts));
+  } else if (phone === "samsung" || phone === "android-other") {
+    const parts: TipPart[] = [
+      "Ajustes > Seguridad y privacidad > Privacidad > Controles de privacidad > Anuncios. Tocá Eliminar ",
+      L("ID de publicidad", EXPLAIN.adId),
+      ". Ajustes > Google > Gestionar tu cuenta de Google > Datos y privacidad > Configuración del historial. Desactivá Cronología y Actividad en la Web y en aplicaciones.",
+    ];
+    if (phone === "samsung") {
+      parts.push(
+        " Ajustes > Seguridad y privacidad > Más ajustes de privacidad > Anuncios > Eliminar ID de publicidad.",
+      );
+    }
+    tips.push(tip("phone", parts));
   }
 
   return tips;
@@ -1666,9 +1544,9 @@ function buildPhoneTutorial(
             "Ajustes > [tu nombre] > iCloud: desmarcá las apps que no necesiten sincronizar. Con iCloud+: Relé privado y Ocultar mi correo.",
         },
         {
-          title: "Protección avanzada de datos",
+          title: "Protección de datos avanzada",
           detail:
-            "Si usás iCloud para las fotos o la copia de seguridad, abrí Ajustes > [tu nombre] > iCloud > Protección avanzada de datos y activala. Cifra de extremo a extremo tus fotos y la mayoría de los datos de iCloud, así Apple no puede leerlos.",
+            "Ajustes > [tu nombre] > iCloud > Protección de datos avanzada. Activala.",
         },
         {
           title: "Safari anti‑rastreo",
@@ -1777,9 +1655,9 @@ function buildOsTutorial(
             "Ajustes > [tu nombre] > iCloud: desmarcá las apps que no necesiten sincronizar. Con iCloud+: activá Relé privado y Ocultar mi correo.",
         },
         {
-          title: "Protección avanzada de datos",
+          title: "Protección de datos avanzada",
           detail:
-            "Si usás iCloud para las fotos o la copia de seguridad, abrí Ajustes > [tu nombre] > iCloud > Protección avanzada de datos y activala. Cifra de extremo a extremo tus fotos y la mayoría de los datos de iCloud, así Apple no puede leerlos.",
+            "Ajustes > [tu nombre] > iCloud > Protección de datos avanzada. Activala.",
         },
         {
           title: "Safari anti‑rastreo",
@@ -1803,9 +1681,6 @@ function buildOsTutorial(
   return null;
 }
 
-const PHOTO_ALT =
-  "Si más adelante querés ir más lejos, una mejor alternativa es guardar la copia en un NAS o un disco externo, en vez de la nube.";
-
 function buildPhotoAdvice(photos: string | string[] | undefined): Tip[] {
   const list = asList(photos);
   if (list.length === 0) return [];
@@ -1816,58 +1691,57 @@ function buildPhotoAdvice(photos: string | string[] | undefined): Tip[] {
   const hasOnedrive = list.includes("onedrive");
   const hasOther = list.includes("other-cloud");
   const tips: Tip[] = [];
+  const farther: TipPart[] = [
+    " Si querés ir más lejos, guardá las fotos en un ",
+    L("NAS", EXPLAIN.nas),
+    " o un disco externo.",
+  ];
 
   const clouds = [hasGoogle, hasIcloud, hasOnedrive, hasOther].filter(
     Boolean,
   ).length;
   if (clouds >= 2) {
     tips.push(
-      tip(
-        "photos",
-        "Tenés tus fotos copiadas en más de una nube, así que más empresas tienen acceso a ellas. Dejá una sola sincronización activa y apagá las otras, sin borrar nada hasta confirmar que la copia que te importa está completa.",
-      ),
+      tip("photos", [
+        "Tenés tus fotos copiadas en más de una nube, así que más empresas tienen acceso a ellas. Dejá una sola sincronización activa y apagá las otras.",
+      ]),
     );
   }
 
   if (hasGoogle) {
     tips.push(
-      tip(
-        "photos",
-        `Podés seguir con Google Fotos y ajustarlo: en los ajustes activá “Ocultar datos de ubicación de las fotos” para no compartir la geolocalización al compartir álbumes; revisá cada tanto los permisos de los álbumes compartidos y bloqueá a quien no quieras; activá la verificación en dos pasos y mirá la actividad en el Panel de privacidad de Google; y, si querés limitar el rastreo, desactivá la agrupación de rostros o el historial de ubicaciones. ${PHOTO_ALT}`,
-      ),
+      tip("photos", [
+        "En Ajustes, activá “Ocultar datos de ubicación de las fotos”. Desactivá la agrupación de rostros y el historial de ubicaciones.",
+        ...farther,
+      ]),
     );
   }
   if (hasIcloud) {
     tips.push(
-      tip(
-        "photos",
-        `Podés seguir con iCloud Fotos. Activá la Protección avanzada de datos (ADP): cifra de extremo a extremo tus fotos y la mayoría de los datos de iCloud, así Apple no puede leerlos. La encontrás en Ajustes > [tu nombre] > iCloud > Protección avanzada de datos. Revisá también con quién compartís álbumes y qué apps están sincronizando. ${PHOTO_ALT}`,
-      ),
+      tip("photos", [
+        "Ajustes > [tu nombre] > iCloud > ",
+        L("Protección de datos avanzada", EXPLAIN.adp),
+        ": activala. Cifra de ",
+        L("extremo a extremo", EXPLAIN.e2ee),
+        " las fotos y la copia de iCloud.",
+        ...farther,
+      ]),
     );
   }
   if (hasOnedrive) {
     tips.push(
-      tip(
-        "photos",
-        `Podés seguir con OneDrive: revisá qué carpetas se sincronizan, sacá de los álbumes compartidos a quien no corresponda y activá la verificación en dos pasos de la cuenta Microsoft. ${PHOTO_ALT}`,
-      ),
+      tip("photos", [
+        "OneDrive > Configuración > Cuentas > Elegir carpetas. Sacá las fotos de la sincronización. En onedrive.live.com > Configuración > Opciones, desactivá el etiquetado de fotos.",
+        ...farther,
+      ]),
     );
   }
   if (hasOther) {
     tips.push(
-      tip(
-        "photos",
-        `En esa otra nube, revisá los álbumes compartidos, desactivá el uso de tus fotos para mejorar el servicio si aparece esa opción y activá la verificación en dos pasos. ${PHOTO_ALT}`,
-      ),
-    );
-  }
-
-  if (tips.length === 0 && list.includes("local")) {
-    tips.push(
-      tip(
-        "photos",
-        `Si mezclás la nube con el teléfono, revisá que no queden álbumes viejos compartidos en un servicio que ya casi no usás. ${PHOTO_ALT}`,
-      ),
+      tip("photos", [
+        "En los ajustes del servicio, desactivá el análisis de fotos y el uso para mejorar el producto.",
+        ...farther,
+      ]),
     );
   }
 

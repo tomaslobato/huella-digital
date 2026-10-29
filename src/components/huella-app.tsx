@@ -33,18 +33,21 @@ import {
   type GuidedTutorial,
   type ScoreResult,
   type Tip,
+  type TipPart,
 } from "@/data/quiz";
 import { cn } from "@/lib/utils";
 
-function groupTipsBySection(tips: Tip[]): { section: string; items: string[] }[] {
+function groupTipsBySection(
+  tips: Tip[],
+): { section: string; items: TipPart[][] }[] {
   const order: string[] = [];
-  const map = new Map<string, string[]>();
+  const map = new Map<string, TipPart[][]>();
   for (const t of tips) {
     const list = map.get(t.section);
     if (list) {
-      list.push(t.text);
+      list.push(t.parts);
     } else {
-      map.set(t.section, [t.text]);
+      map.set(t.section, [t.parts]);
       order.push(t.section);
     }
   }
@@ -52,6 +55,28 @@ function groupTipsBySection(tips: Tip[]): { section: string; items: string[] }[]
     section,
     items: map.get(section) ?? [],
   }));
+}
+
+function TipText({ parts }: { parts: TipPart[] }) {
+  return (
+    <>
+      {parts.map((part, i) =>
+        typeof part === "string" ? (
+          <span key={i}>{part}</span>
+        ) : (
+          <a
+            key={i}
+            href={part.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-[var(--mark)] underline decoration-[var(--mark)]/70 underline-offset-2 hover:opacity-80"
+          >
+            {part.label}
+          </a>
+        ),
+      )}
+    </>
+  );
 }
 
 const THEME_KEY = "theme";
@@ -791,8 +816,10 @@ function Results({
                       : "mt-3",
                   )}
                 >
-                  {group.items.map((text) => (
-                    <li key={text.slice(0, 48)}>{text}</li>
+                  {group.items.map((parts, i) => (
+                    <li key={i}>
+                      <TipText parts={parts} />
+                    </li>
                   ))}
                 </ul>
               </div>
