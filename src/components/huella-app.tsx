@@ -722,13 +722,11 @@ function Results({
 
   if (step === "advice") {
     const tips = result.tips ?? [];
-    const photoAdvice = result.photoAdvice;
+    const photoAdvice = result.photoAdvice ?? [];
     const hasPhoneTutorial = Boolean(result.phoneTutorial);
     const hasOsTutorial = Boolean(result.osTutorial);
     const hasDestinations = (result.networksDetail?.length ?? 0) > 0;
-    const tipGroups = groupTipsBySection(
-      photoAdvice ? [...tips, photoAdvice] : tips,
-    );
+    const tipGroups = groupTipsBySection([...tips, ...photoAdvice]);
     const watchNote = result.networksWatchNote;
     const hasAdviceContent = tipGroups.length > 0 || Boolean(watchNote);
     const nextTutorial: ResultStep | null = hasPhoneTutorial
