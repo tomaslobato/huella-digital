@@ -43,8 +43,8 @@ export const TIME_CUSTOM_MAX = TIME_HOURS_MAX;
 export const questions: Question[] = [
   {
     id: "networks",
-    title: "¿Qué redes sociales usas más?",
-    hint: "Marca todas las que tengas activas.",
+    title: "¿Qué redes sociales usás más?",
+    hint: "Marcá todas las que tengas activas.",
     type: "multi",
     options: [
       { id: "instagram", label: "Instagram", impact: -7 },
@@ -59,7 +59,7 @@ export const questions: Question[] = [
   },
   {
     id: "time",
-    title: "¿Cuánto tiempo pasas al día en redes sociales?",
+    title: "¿Cuánto tiempo pasás al día en redes sociales?",
     hint: "Horas aproximadas al día.",
     type: "hours",
     skipIf: (a) => {
@@ -71,7 +71,7 @@ export const questions: Question[] = [
   {
     id: "publish",
     title: "¿Con qué frecuencia subís contenido a redes?",
-    hint: "Posts, stories, reels… lo que las empresas guardan de ti.",
+    hint: "Publicaciones, historias, reels… lo que las empresas guardan de vos.",
     type: "single",
     skipIf: (a) => {
       const nets = Array.isArray(a.networks) ? a.networks : [];
@@ -108,8 +108,8 @@ export const questions: Question[] = [
   },
   {
     id: "post-types",
-    title: "¿Qué tipo de contenido sueles subir?",
-    hint: "Puedes marcar varias.",
+    title: "¿Qué tipo de contenido solés subir?",
+    hint: "Podés marcar varias.",
     type: "multi",
     skipIf: (a) => {
       const nets = Array.isArray(a.networks) ? a.networks : [];
@@ -151,8 +151,8 @@ export const questions: Question[] = [
   },
   {
     id: "login",
-    title: "¿Cómo sueles iniciar sesión en apps y sitios?",
-    hint: "Puedes marcar varias.",
+    title: "¿Cómo solés iniciar sesión en apps y sitios?",
+    hint: "Podés marcar varias.",
     type: "multi",
     options: [
       {
@@ -187,7 +187,7 @@ export const questions: Question[] = [
       },
       {
         id: "manager-2fa",
-        label: "Gestor de contraseñas + 2FA si es posible",
+        label: "Gestor de contraseñas y verificación en dos pasos, si se puede",
         impact: 16,
       },
     ],
@@ -208,7 +208,7 @@ export const questions: Question[] = [
   },
   {
     id: "phone",
-    title: "¿Qué tipo de celular usas?",
+    title: "¿Qué celular usás?",
     type: "single",
     options: [
       { id: "iphone", label: "iPhone", impact: 1 },
@@ -218,7 +218,7 @@ export const questions: Question[] = [
   },
   {
     id: "os",
-    title: "¿Qué sistema usas en la computadora?",
+    title: "¿Qué sistema usás en la computadora?",
     type: "single",
     options: [
       { id: "windows", label: "Windows", impact: -3 },
@@ -228,7 +228,7 @@ export const questions: Question[] = [
   },
   {
     id: "browser",
-    title: "¿Qué navegador usas más?",
+    title: "¿Qué navegador usás más?",
     type: "single",
     options: [
       { id: "chrome", label: "Chrome", impact: -6 },
@@ -260,8 +260,8 @@ export const questions: Question[] = [
   },
   {
     id: "photos",
-    title: "¿Dónde guardas tus fotos?",
-    hint: "Puedes marcar varias.",
+    title: "¿Dónde guardás tus fotos?",
+    hint: "Podés marcar varias.",
     type: "multi",
     options: [
       { id: "google-photos", label: "Google Fotos", impact: -8 },
@@ -281,7 +281,7 @@ export const questions: Question[] = [
   },
   {
     id: "ai-daily",
-    title: "¿Usas inteligencia artificial a diario?",
+    title: "¿Usás inteligencia artificial a diario?",
     hint: "ChatGPT, Gemini, Claude, Copilot, asistentes del teléfono…",
     type: "single",
     options: [
@@ -293,8 +293,8 @@ export const questions: Question[] = [
   },
   {
     id: "ai-how",
-    title: "¿Para qué usas la inteligencia artificial?",
-    hint: "Puedes marcar varias.",
+    title: "¿Para qué usás la inteligencia artificial?",
+    hint: "Podés marcar varias.",
     type: "multi",
     skipIf: (a) => a["ai-daily"] === "no",
     options: [
@@ -305,7 +305,7 @@ export const questions: Question[] = [
       },
       {
         id: "ideas",
-        label: "Ideas, brainstorming o entretenimiento",
+        label: "Ideas, lluvia de ideas o entretenimiento",
         impact: -3,
       },
       {
@@ -338,14 +338,14 @@ export const questions: Question[] = [
         label: "Otro",
         impact: -3,
         customText: true,
-        customTextLabel: "Cuéntanos para qué",
+        customTextLabel: "Contanos para qué",
         customTextPlaceholder: "Ej.: traducir correos, planificar viajes…",
       },
     ],
   },
   {
     id: "ai-personal",
-    title: "¿Le cuentas cosas personales a la inteligencia artificial?",
+    title: "¿Le contás cosas personales a la inteligencia artificial?",
     type: "single",
     skipIf: (a) => a["ai-daily"] === "no",
     options: [
@@ -681,19 +681,19 @@ export function scoreAnswers(answers: AnswerMap): ScoreResult {
   };
 
   const summaries: Record<number, string> = {
-    1: "Tu huella digital está muy expuesta. Redes, tipo de posts, login, sistema, nube o IA dejan un rastro fácil de seguir.",
+    1: "Tu huella digital está muy expuesta. Las redes, el tipo de publicaciones, cómo entrás, el sistema, la nube o la inteligencia artificial dejan un rastro fácil de seguir.",
     2: "Hay varias puertas abiertas en tu día a día digital. Todavía estás a tiempo de cerrarlas.",
     3: "Ni tan expuesto ni tan protegido: un nivel intermedio, con margen claro para mejorar.",
     4: "Tus hábitos ya limitan bastante el rastro. Vas por un camino sólido.",
-    5: "Cuidas bien qué compartes y con quién. La privacidad se nota en tus respuestas.",
+    5: "Cuidás bien qué compartís y con quién. La privacidad se nota en tus respuestas.",
   };
 
   const encouragements: Record<number, string> = {
-    1: "Cada ajuste cuenta. Empieza por uno hoy; no hace falta ser perfecto.",
+    1: "Cada ajuste cuenta. Empezá por uno hoy; no hace falta que sea perfecto.",
     2: "Con un par de cambios concretos ya vas a notar la diferencia.",
-    3: "Vas por buen camino. Suma un hábito nuevo esta semana.",
-    4: "Se nota que piensas antes de compartir. Sigue afinando detalles.",
-    5: "Excelente cuidado. Comparte lo aprendido con alguien cercano.",
+    3: "Vas por buen camino. Sumá un hábito nuevo esta semana.",
+    4: "Se nota que pensás antes de compartir. Seguí afinando los detalles.",
+    5: "Excelente cuidado. Compartí lo que aprendiste con alguien cercano.",
   };
 
   const networkIds = normalizeNetworks(
@@ -754,7 +754,7 @@ function buildComparison(answers: AnswerMap): UsageComparison {
   const phoneDelta = Math.round((userPhoneHours - AVG_PHONE_HOURS) * 10) / 10;
 
   const socialVerdict = noSocial
-    ? "No usas las redes del listado: menos perfil publicitario típico."
+    ? "No usás las redes del listado: menos perfil publicitario típico."
     : socialDelta <= -0.5
       ? "Estás por debajo del promedio de redes."
       : socialDelta >= 0.5
@@ -769,9 +769,9 @@ function buildComparison(answers: AnswerMap): UsageComparison {
         : "Tu uso estimado de teléfono ronda el promedio.";
 
   const blurb = noSocial
-    ? "Sin redes activas ya reduces una gran parte del rastro. El resto de la huella sigue en login, nube, dispositivo e IA."
+    ? "Sin redes activas ya reducís una gran parte del rastro. El resto de la huella sigue en cómo entrás, la nube, el dispositivo y la inteligencia artificial."
     : socialDelta >= 1.5
-      ? "Cuanto más tiempo en feeds, más señales acumulan las plataformas sobre ti. Bajar un poco el scroll ya reduce la huella."
+      ? "Cuanto más tiempo pasás en las redes, más señales juntan las plataformas sobre vos. Bajar un poco el desplazamiento ya reduce la huella."
       : socialDelta <= -1
         ? "Menos horas en redes suele significar menos perfil publicitario. Buen punto de partida."
         : "Estar cerca del promedio no es neutro: en Latinoamérica y España ese promedio ya es alto. Cualquier recorte cuenta.";
@@ -839,14 +839,14 @@ function buildDestinations(
     const bits: string[] = [];
     if (metaApps.length > 0) {
       bits.push(
-        `Usas ${joinParts(
+        `Usás ${joinParts(
           metaApps.map((id) => (id === "instagram" ? "Instagram" : "Facebook")),
-        )}: actividad, fotos, stories y mensajes van al mismo perfil publicitario de Meta`,
+        )}: la actividad, las fotos, las historias y los mensajes van al mismo perfil publicitario de Meta`,
       );
     }
     if (hasMetaLogin) {
       bits.push(
-        "«Continuar con Facebook» vincula otras apps a ese mismo grafo social",
+        "«Continuar con Facebook» vincula otras apps a esa misma red de contactos",
       );
     }
     dest.push({
@@ -879,7 +879,7 @@ function buildDestinations(
   }
   if (browser === "chrome") {
     googleBits.push(
-      "Chrome (historial, sync y telemetría ligados a tu cuenta Google)",
+      "Chrome (historial, sincronización y datos de uso ligados a tu cuenta de Google)",
     );
   }
   if (email === "gmail") {
@@ -922,14 +922,14 @@ function buildDestinations(
   const microsoftBits: string[] = [];
   if (os === "windows") {
     microsoftBits.push(
-      "Windows (telemetría, cuenta Microsoft y sync del sistema)",
+      "Windows (datos de uso, cuenta Microsoft y sincronización del sistema)",
     );
   }
   if (photos.includes("onedrive")) {
     microsoftBits.push("OneDrive (archivos y fotos en la nube de Microsoft)");
   }
   if (browser === "edge") {
-    microsoftBits.push("Edge (historial y sync con cuenta Microsoft)");
+    microsoftBits.push("Edge (historial y sincronización con la cuenta Microsoft)");
   }
   if (email === "outlook") {
     microsoftBits.push("Outlook (correo y contactos en la cuenta Microsoft)");
@@ -938,7 +938,7 @@ function buildDestinations(
     dest.push({
       id: "microsoft",
       name: "Microsoft",
-      note: `${joinParts(microsoftBits)}. Con una cuenta Microsoft esos datos se cruzan con Outlook, Edge y, si lo usas, Copilot.`,
+      note: `${joinParts(microsoftBits)}. Con una cuenta Microsoft esos datos se cruzan con Outlook, Edge y, si lo usás, Copilot.`,
     });
   }
 
@@ -953,21 +953,21 @@ function buildDestinations(
     dest.push({
       id: "x",
       name: "X (Twitter)",
-      note: "Timeline, likes y DMs alimentan anuncios y, según la configuración, entrenamiento de modelos.",
+      note: "La línea de tiempo, los me gusta y los mensajes directos alimentan anuncios y, según la configuración, el entrenamiento de modelos.",
     });
   }
   if (networkIds.includes("telegram")) {
     dest.push({
       id: "telegram",
       name: "Telegram",
-      note: "Chats en la nube (salvo secret chats), contactos y bots pueden exponer datos; el número queda vinculado a la cuenta.",
+      note: "Los chats en la nube (salvo los chats secretos), los contactos y los bots pueden exponer datos. El número queda vinculado a la cuenta.",
     });
   }
   if (networkIds.includes("reddit")) {
     dest.push({
       id: "reddit",
       name: "Reddit",
-      note: "Posts e intereses del feed se usan para personalización y publicidad; el historial queda en la cuenta.",
+      note: "Las publicaciones y los intereses del feed se usan para personalizar y para publicidad. El historial queda en la cuenta.",
     });
   }
 
@@ -1008,7 +1008,7 @@ function buildDestinations(
     dest.push({
       id: "ai",
       name: "Empresas de inteligencia artificial",
-      note: `Usas IA ${intensity}. Prompts, archivos pegados y contexto de conversación van a OpenAI, Google, Anthropic, Microsoft u otros proveedores — y pueden alimentar mejora de modelos según la configuración de cada uno.`,
+      note: `Usás inteligencia artificial ${intensity}. Lo que escribís, los archivos que pegás y el contexto de la conversación van a OpenAI, Google, Anthropic, Microsoft u otros. Según la configuración de cada uno, pueden usarlos para mejorar sus modelos.`,
     });
   }
 
@@ -1031,7 +1031,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       tips.push(
         tip(
           "networks",
-          "Instagram: desactivá la actividad fuera de Meta, limitá la audiencia de las stories y apagá las sugerencias a contactos.",
+          "Instagram: desactivá la actividad fuera de Meta, limitá quién ve tus historias y apagá las sugerencias a contactos.",
         ),
       );
     }
@@ -1039,7 +1039,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       tips.push(
         tip(
           "networks",
-          "Facebook: desactivá la actividad fuera de Meta, revisá la audiencia de los posts y apagá las sugerencias a contactos.",
+          "Facebook: desactivá la actividad fuera de Meta, revisá quién puede ver tus publicaciones y apagá las sugerencias a contactos.",
         ),
       );
     }
@@ -1063,7 +1063,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       tips.push(
         tip(
           "networks",
-          "X: sacá la ubicación de los posts, limitá los mensajes directos y revisá la personalización de anuncios.",
+          "X: sacá la ubicación de las publicaciones, limitá los mensajes directos y revisá la personalización de anuncios.",
         ),
       );
     }
@@ -1122,7 +1122,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       tips.push(
         tip(
           "publish",
-          "Como creador, separá la cuenta personal de la profesional, revisá los derechos de imagen y limitá qué datos personales aparecen en la bio, los vivos y las colaboraciones.",
+          "Como creador, separá la cuenta personal de la profesional, revisá los derechos de imagen y limitá qué datos personales aparecen en la biografía, las transmisiones en vivo y las colaboraciones.",
         ),
       );
       break;
@@ -1182,7 +1182,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       tips.push(
         tip(
           "post-types",
-          "La cara y la rutina alimentan el reconocimiento y los horarios. Mezclá ángulos, evitá el mismo fondo todos los días y limitá las stories que quedan fijas.",
+          "La cara y la rutina alimentan el reconocimiento y los horarios. Mezclá ángulos, evitá el mismo fondo todos los días y limitá las historias que quedan guardadas.",
         ),
       );
     }
@@ -1226,7 +1226,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       tips.push(
         tip(
           "login",
-          "Entrar con Facebook comparte tu grafo social. En la configuración de Facebook revisá las apps conectadas y sacá las que no uses. Si más adelante querés ir más lejos, pasá las cuentas importantes a un correo con contraseña propia.",
+          "Entrar con Facebook le muestra a Meta qué otras apps usás. En la configuración de Facebook revisá las apps conectadas y sacá las que no uses. Si más adelante querés ir más lejos, pasá las cuentas importantes a un correo con contraseña propia.",
         ),
       );
     }
@@ -1544,7 +1544,7 @@ function baseAndroidSteps(skin: "stock" | "samsung"): TutorialStep[] {
   return [
     {
       title: "Gestor de permisos",
-      detail: `${permissionPath} Tocá Ubicación, después Contactos, Micrófono, Cámara, Fotos y vídeos y SMS. En cada lista, entrá a las apps que no necesitan ese dato y elegí No permitir. En Ubicación, dejá “Permitir solo si la aplicación está en uso” o “Preguntar siempre”, y desactivá la ubicación precisa salvo en mapas.`,
+      detail: `${permissionPath} Tocá Ubicación, después Contactos, Micrófono, Cámara, Fotos y videos y SMS. En cada lista, entrá a las apps que no necesitan ese dato y elegí No permitir. En Ubicación, dejá “Permitir solo si la aplicación está en uso” o “Preguntar siempre”, y desactivá la ubicación precisa salvo en mapas.`,
     },
     {
       title: "Ubicación del teléfono",
@@ -1574,7 +1574,7 @@ function baseAndroidSteps(skin: "stock" | "samsung"): TutorialStep[] {
     {
       title: "Copia de seguridad",
       detail:
-        "Abrí Ajustes > Google > Todos los servicios. En Copia de seguridad y restauración, tocá Copia de seguridad. Mirá qué se sube a tu cuenta de Google: Fotos y vídeos, y Datos del dispositivo (apps, SMS, contactos, historial de llamadas y ajustes). Desactivá Copia de seguridad de Google One si no querés ese respaldo, o dejala solo si la cuenta es la tuya.",
+        "Abrí Ajustes > Google > Todos los servicios. En Copia de seguridad y restauración, tocá Copia de seguridad. Mirá qué se sube a tu cuenta de Google: Fotos y videos, y Datos del dispositivo (apps, SMS, contactos, historial de llamadas y ajustes). Desactivá Copia de seguridad de Google One si no querés ese respaldo, o dejala solo si la cuenta es la tuya.",
     },
     {
       title: "Localizador (Encontrar mi dispositivo)",
@@ -1620,7 +1620,7 @@ function samsungOnlySteps(): TutorialStep[] {
     {
       title: "Find My Mobile",
       detail:
-        "Abrí Ajustes > Seguridad y privacidad > Protección ante dispositivos perdidos > Find My Mobile. Si no ves ese título, buscá “Find My Mobile” o “Buscar mi móvil” en el buscador de Ajustes. Activá Permitir encontrar este teléfono solo para poder recuperarlo: la ubicación queda en tu Samsung account. Revisá Enviar la última ubicación y dejala activa únicamente en esa cuenta.",
+        "Abrí Ajustes > Seguridad y privacidad > Protección ante dispositivos perdidos > Find My Mobile. Si no ves ese título, buscá “Find My Mobile” o “Buscar mi móvil” en el buscador de Ajustes. Activá Permitir encontrar este teléfono solo para poder recuperarlo: la ubicación queda en tu cuenta de Samsung. Revisá Enviar la última ubicación y dejala activa únicamente en esa cuenta.",
     },
     {
       title: "Carpeta segura",
@@ -1636,10 +1636,10 @@ function samsungOnlySteps(): TutorialStep[] {
 }
 
 const PHONE_INTRO =
-  "Sigue esta guía para configurar tu teléfono mejor y aumentar tu privacidad.";
+  "Seguí esta guía para configurar mejor tu teléfono y cuidar más tu privacidad.";
 
 const OS_INTRO =
-  "Sigue esta guía para configurar tu computadora mejor y aumentar tu privacidad.";
+  "Seguí esta guía para configurar mejor tu computadora y cuidar más tu privacidad.";
 
 function buildPhoneTutorial(
   phone: string | string[] | undefined,
@@ -1653,12 +1653,12 @@ function buildPhoneTutorial(
         {
           title: "App Tracking Transparency",
           detail:
-            "Ajustes → Privacidad y seguridad → Seguimiento → desactiva “Permitir que las apps soliciten seguimiento”.",
+            "Ajustes > Privacidad y seguridad > Seguimiento. Desactivá “Permitir que las apps soliciten seguimiento”.",
         },
         {
           title: "Ubicación precisa",
           detail:
-            "Ajustes → Privacidad → Localización. Por app: “Nunca” o “Mientras se usa”. Desactiva Localización precisa salvo mapas.",
+            "Ajustes > Privacidad y seguridad > Localización. En cada app, elegí “Nunca” o “Al usar”. Desactivá la ubicación precisa, salvo en mapas.",
         },
         {
           title: "Apple ID e iCloud",
@@ -1673,17 +1673,17 @@ function buildPhoneTutorial(
         {
           title: "Safari anti‑rastreo",
           detail:
-            "Ajustes → Safari → Impedir seguimiento entre sitios. Privada con Face/Touch ID si quieres.",
+            "Ajustes > Safari > Impedir seguimiento entre sitios. Si querés, usá la navegación privada con Face ID o Touch ID.",
         },
         {
           title: "Fotos, micrófono y contactos",
           detail:
-            "Privacidad y seguridad: Fotos en “Ninguna” o “Seleccionadas”; revisa Micrófono y Contactos.",
+            "En Privacidad y seguridad, dejá Fotos en “Ninguna” o “Seleccionadas” y revisá Micrófono y Contactos.",
         },
         {
           title: "Analítica y anuncios Apple",
           detail:
-            "Limita compartir analítica. En medios y compras → controles de anuncios, reduce personalización.",
+            "Limitá el envío de datos de análisis. En Medios y compras > Controles de anuncios, reducí la personalización.",
         },
       ],
     };
@@ -1724,12 +1724,12 @@ function buildOsTutorial(
         {
           title: "Diagnósticos y telemetría",
           detail:
-            "Configuración → Privacidad y seguridad → Diagnósticos y comentarios. Elige datos de diagnóstico necesarios y desactiva experiencias personalizadas y mejorar escritura/entrada.",
+            "Configuración > Privacidad y seguridad > Diagnósticos y comentarios. Elegí los datos de diagnóstico necesarios y desactivá las experiencias personalizadas y la mejora de la escritura.",
         },
         {
           title: "ID de publicidad y general",
           detail:
-            "Privacidad y seguridad → General: desactiva ID de publicidad, sugerencias en Configuración y el seguimiento de lanzamientos de apps.",
+            "Privacidad y seguridad > General: desactivá el id. de publicidad, las sugerencias en Configuración y el seguimiento de inicio de apps.",
         },
         {
           title: "Cuenta local",
@@ -1739,12 +1739,12 @@ function buildOsTutorial(
         {
           title: "Ubicación y permisos",
           detail:
-            "Privacidad y seguridad → Ubicación: apaga el servicio si no lo necesitas, o permite solo apps concretas. Revisa Cámara, Micrófono y Contactos igual.",
+            "Privacidad y seguridad > Ubicación: apagá el servicio si no lo necesitás, o dejalo solo en las apps que sí. Revisá también Cámara, Micrófono y Contactos.",
         },
         {
           title: "Actividad e historial",
           detail:
-            "Privacidad y seguridad → Historial de actividad: desactiva el envío a Microsoft. Revisa también Búsqueda de Windows y lo que indexa.",
+            "Privacidad y seguridad > Historial de actividad: desactivá el envío a Microsoft. Revisá también qué indexa la búsqueda de Windows.",
         },
         {
           title: "OneDrive y Edge",
@@ -1764,12 +1764,12 @@ function buildOsTutorial(
         {
           title: "Privacidad y seguridad",
           detail:
-            "Ajustes del Sistema → Privacidad y seguridad. Revisa Ubicación, Cámara, Micrófono, Fotos y Contactos: deja solo lo imprescindible por app.",
+            "Ajustes del Sistema > Privacidad y seguridad. Revisá Ubicación, Cámara, Micrófono, Fotos y Contactos, y dejá solo lo imprescindible en cada app.",
         },
         {
           title: "Análisis y mejoras",
           detail:
-            "Privacidad y seguridad → Análisis y mejoras: desactiva compartir análisis del Mac y de apps con Apple y desarrolladores si no lo quieres.",
+            "Privacidad y seguridad > Análisis y mejoras: desactivá compartir el análisis de la Mac y de las apps con Apple y los desarrolladores, si no lo querés.",
         },
         {
           title: "Apple ID e iCloud",
@@ -1784,17 +1784,17 @@ function buildOsTutorial(
         {
           title: "Safari anti‑rastreo",
           detail:
-            "Safari → Ajustes → Avanzado / Privacidad: Impedir seguimiento entre sitios. Limita extensiones a las que realmente uses.",
+            "Safari > Ajustes > Privacidad: activá Impedir seguimiento entre sitios. Dejá solo las extensiones que realmente usás.",
         },
         {
           title: "Anuncios de Apple",
           detail:
-            "Privacidad y seguridad → Apple Advertising: desactiva anuncios personalizados.",
+            "Privacidad y seguridad > Publicidad de Apple: desactivá los anuncios personalizados.",
         },
         {
           title: "Siri y dictado",
           detail:
-            "Si no usas Siri, desactívala. Revisa Mejorar Siri y Dictado para no enviar audio a Apple.",
+            "Si no usás Siri, desactivala. Revisá Mejorar Siri y Dictado para no enviar audio a Apple.",
         },
       ],
     };
@@ -1824,7 +1824,7 @@ function buildPhotoAdvice(photos: string | string[] | undefined): Tip[] {
     tips.push(
       tip(
         "photos",
-        "Tenés fotos en más de una nube y el álbum queda duplicado. Dejá una sola sincronización activa y apagá las otras, sin borrar nada hasta confirmar que la copia que te importa está completa.",
+        "Tenés tus fotos copiadas en más de una nube, así que más empresas tienen acceso a ellas. Dejá una sola sincronización activa y apagá las otras, sin borrar nada hasta confirmar que la copia que te importa está completa.",
       ),
     );
   }

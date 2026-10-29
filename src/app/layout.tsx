@@ -17,7 +17,7 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   title: "Huella Digital — ¿A dónde van tus datos?",
   description:
-    "Conoce qué es la huella digital, descubre a dónde van tus datos según los servicios que usas y aprende cómo recuperar el control.",
+    "Conocé qué es la huella digital, descubrí a dónde van tus datos según los servicios que usás y aprendé cómo recuperar el control.",
 };
 
 /** Corre antes de pintar: preferencia guardada, o la del sistema si todavía no eligió. */

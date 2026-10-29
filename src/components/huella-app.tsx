@@ -308,7 +308,7 @@ function Landing({ onStart }: { onStart: () => void }) {
       </h1>
       <div className="fade-in-late mx-auto mt-8 h-px w-16 origin-center bg-[var(--mark)] line-draw" />
       <p className="fade-in-late mx-auto mt-10 max-w-md text-lg leading-relaxed text-[var(--copy)] sm:text-xl">
-        Cada app, cuenta y clic deja rastros: quién eres, dónde estás y qué te
+        Cada app, cuenta y clic deja rastros: quién sos, dónde estás y qué te
         interesa. Esa es tu{" "}
         <span className="font-medium text-foreground">huella digital</span> —
         y casi siempre viaja más lejos de lo que imaginas.
@@ -549,7 +549,7 @@ function QuizStep({
                       htmlFor={`custom-text-${opt.id}`}
                       className="mb-2 block text-sm text-muted-foreground"
                     >
-                      {opt.customTextLabel ?? "Cuéntanos más"}
+                      {opt.customTextLabel ?? "Contanos más"}
                     </label>
                     <input
                       id={`custom-text-${opt.id}`}
@@ -559,7 +559,7 @@ function QuizStep({
                         onCustomText(e.target.value.slice(0, 120))
                       }
                       placeholder={
-                        opt.customTextPlaceholder ?? "Escribe aquí…"
+                        opt.customTextPlaceholder ?? "Escribí acá…"
                       }
                       autoComplete="off"
                       className="h-10 w-full border border-border bg-transparent px-3 text-[15px] outline-none focus:border-foreground"
@@ -663,7 +663,7 @@ function Results({
             Estadísticas
           </p>
           <h1 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">
-            Tú frente al promedio
+            Vos frente al promedio
           </h1>
           <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-[var(--copy)]">
             Comparación orientativa con el promedio de uso diario de redes
@@ -674,7 +674,7 @@ function Results({
         <section className="fade-in-late mt-10 space-y-8">
           <StatBlock
             title="Redes sociales"
-            userLabel={`Tú: ${formatHours(c.userSocialHours)}`}
+            userLabel={`Vos: ${formatHours(c.userSocialHours)}`}
             userSub={c.userSocialLabel}
             avgLabel={`Promedio LatAm + España: ${formatHours(c.avgSocialHours)}`}
             userValue={c.userSocialHours}
@@ -755,7 +755,7 @@ function Results({
           </h1>
           {tipGroups.length > 0 && (
             <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-[var(--copy)]">
-              Elige alguno de estos cambios para empezar
+              Elegí alguno de estos cambios para empezar
             </p>
           )}
         </header>
@@ -810,7 +810,7 @@ function Results({
         >
           {hasAdviceContent && (
             <p className="max-w-sm text-center text-sm leading-relaxed text-[var(--copy)]">
-              Cada pequeño cambio suma. Vuelve cuando quieras y mide de nuevo
+              Cada pequeño cambio suma. Volvé cuando quieras y medí de nuevo
               cómo va tu huella.
             </p>
           )}
@@ -820,7 +820,7 @@ function Results({
               onClick={() => onStep("phone")}
               className="h-11 rounded-sm bg-foreground px-6 text-background hover:bg-foreground/90"
             >
-              Configura mejor tu teléfono
+              Configurá mejor tu teléfono
               <ArrowRight className="size-4" />
             </Button>
           )}
@@ -830,7 +830,7 @@ function Results({
               onClick={() => onStep("os")}
               className="h-11 rounded-sm bg-foreground px-6 text-background hover:bg-foreground/90"
             >
-              Configura mejor tu {result.osTutorial.title}
+              Configurá mejor tu {result.osTutorial.title}
               <ArrowRight className="size-4" />
             </Button>
           )}
@@ -855,7 +855,7 @@ function Results({
         eyebrow="Teléfono"
         tutorial={result.phoneTutorial}
         nextLevel={{
-          before: "Si quieres llevar tu privacidad al siguiente nivel, usa ",
+          before: "Si querés llevar tu privacidad al siguiente nivel, usá ",
           label: "GrapheneOS",
           href: GRAPHENEOS_URL,
         }}
@@ -863,7 +863,7 @@ function Results({
         nextAction={
           result.osTutorial
             ? {
-                label: `Configura mejor tu ${result.osTutorial.title}`,
+                label: `Configurá mejor tu ${result.osTutorial.title}`,
                 onClick: () => onStep("os"),
               }
             : null
@@ -880,7 +880,7 @@ function Results({
         eyebrow="Computadora"
         tutorial={result.osTutorial}
         nextLevel={{
-          before: "Si quieres llevar tu privacidad al siguiente nivel, usa ",
+          before: "Si querés llevar tu privacidad al siguiente nivel, usá ",
           label: "Linux",
           href: LINUX_URL,
         }}
@@ -927,7 +927,7 @@ function TutorialStep({
           {eyebrow}
         </p>
         <h1 className="mt-3 font-display text-3xl tracking-tight sm:text-4xl">
-          Tutorial — {tutorial.title}
+          Guía — {tutorial.title}
         </h1>
         <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-[var(--copy)]">
           {tutorial.intro}
@@ -965,7 +965,7 @@ function TutorialStep({
         </p>
         <p className="max-w-sm text-center text-xs leading-relaxed text-muted-foreground">
           Los menús pueden cambiar de nombre según la versión del sistema.
-          Busca estos términos en Ajustes si no coinciden exactos.
+          Buscá estos términos en Ajustes si no coinciden exactamente.
         </p>
         {nextAction && (
           <Button
@@ -1020,7 +1020,8 @@ function DestinationsStep({
         </h1>
         <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-[var(--copy)]">
           Según tus respuestas, estas son las empresas que más acumulan tu
-          rastro — redes, login, celular, nube e IA.
+          rastro: las redes, cómo entrás, el celular, la nube y la inteligencia
+          artificial.
         </p>
       </header>
 
