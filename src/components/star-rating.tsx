@@ -28,7 +28,7 @@ export function StarRating({
             className={cn(
               dim,
               "transition-colors",
-              filled ? "text-[var(--mark)]" : "text-[#c5ced6]",
+              filled ? "text-[var(--mark)]" : "text-[var(--star-empty)]",
               animate && "star-pop",
             )}
             style={animate ? { animationDelay: `${i * 90}ms` } : undefined}
