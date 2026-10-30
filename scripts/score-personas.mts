@@ -21,7 +21,7 @@ const personas: { id: string; label: string; answers: AnswerMap }[] = [
       // La pregunta no se muestra si publica "casi nunca"; queda igual el caso realista.
       "post-types": ["light"],
       login: ["google"],
-      email: "gmail",
+      email: ["gmail"],
       phone: "iphone",
       os: "windows",
       browser: "brave",
@@ -39,7 +39,7 @@ const personas: { id: string; label: string; answers: AnswerMap }[] = [
     answers: {
       networks: ["none"],
       login: ["manager-2fa"],
-      email: "proton",
+      email: ["proton"],
       phone: "iphone",
       os: "linux",
       browser: "brave",
@@ -67,7 +67,7 @@ const personas: { id: string; label: string; answers: AnswerMap }[] = [
       publish: "always",
       "post-types": ["face-routine", "location", "family", "work", "opinions"],
       login: ["google", "facebook", "email-same"],
-      email: "gmail",
+      email: ["gmail"],
       phone: "samsung",
       os: "windows",
       browser: "chrome",

@@ -197,9 +197,9 @@ export const questions: Question[] = [
   },
   {
     id: "email",
-    title: "¿Qué correo usás?",
-    hint: "La cuenta con la que leés el mail del día a día.",
-    type: "single",
+    title: "¿Qué correos usás?",
+    hint: "Podés marcar varias.",
+    type: "multi",
     options: [
       { id: "gmail", label: "Gmail", impact: -2 },
       { id: "outlook", label: "Outlook / Hotmail", impact: -2 },
@@ -588,6 +588,23 @@ function asList(value: string | string[] | undefined): string[] {
   return [];
 }
 
+/**
+ * Varias cuentas suman su impacto, pero el correo no puede mover el puntaje
+ * fuera de este rango: muchas bandejas no deberían pesar más que el resto.
+ */
+const EMAIL_IMPACT_MIN = -4;
+const EMAIL_IMPACT_MAX = 5;
+
+function emailSelectionImpact(ids: string[]): number {
+  const options = questions.find((question) => question.id === "email")?.options;
+  let impact = 0;
+  for (const id of ids) {
+    const option = options?.find((item) => item.id === id);
+    if (option) impact += option.impact;
+  }
+  return clamp(impact, EMAIL_IMPACT_MIN, EMAIL_IMPACT_MAX);
+}
+
 /** Tipos de post que exponen identidad / vida personal. */
 const PERSONAL_POST_TYPES = [
   "face-routine",
@@ -613,10 +630,11 @@ function ecosystemConcentrationImpact(answers: AnswerMap): number {
   const browser =
     typeof answers.browser === "string" ? answers.browser : "";
 
+  const emails = asList(answers.email);
   const googleSignals = [
     networks.includes("youtube"),
     logins.includes("google"),
-    answers.email === "gmail",
+    emails.includes("gmail"),
     phone === "samsung" || phone === "android-other",
     photos.includes("google-photos"),
     browser === "chrome",
@@ -636,14 +654,14 @@ function ecosystemConcentrationImpact(answers: AnswerMap): number {
     os === "macos",
     logins.includes("apple"),
     photos.includes("icloud"),
-    answers.email === "icloud-mail",
+    emails.includes("icloud-mail"),
     browser === "safari",
   ].filter(Boolean).length;
   if (appleSignals >= 4) delta -= 1;
 
   const microsoftSignals = [
     os === "windows",
-    answers.email === "outlook",
+    emails.includes("outlook"),
     photos.includes("onedrive"),
     browser === "edge",
   ].filter(Boolean).length;
@@ -675,15 +693,22 @@ export function scoreAnswers(answers: AnswerMap): ScoreResult {
     const value = answers[q.id];
     if (value == null) continue;
 
-    if (q.type === "multi" && Array.isArray(value)) {
-      const ids = value.includes("none")
-        ? value.filter((id) => id === "none")
-        : value.filter((id) => id !== "none");
-      for (const optId of ids) {
-        const opt = q.options.find((o) => o.id === optId);
-        if (opt) raw += opt.impact;
+    if (q.type === "multi") {
+      // Un string guardado cuenta como una sola opción (correo viejo, de una cuenta).
+      const list = asList(value);
+      if (list.length === 0) continue;
+      const ids = list.includes("none")
+        ? list.filter((id) => id === "none")
+        : list.filter((id) => id !== "none");
+      if (q.id === "email") {
+        raw += emailSelectionImpact(ids);
+      } else {
+        for (const optId of ids) {
+          const opt = q.options.find((o) => o.id === optId);
+          if (opt) raw += opt.impact;
+        }
       }
-      if (q.id === "networks" && !value.includes("none")) {
+      if (q.id === "networks" && !list.includes("none")) {
         const counted = ids.filter(
           (id) =>
             !(NETWORKS_EXEMPT_FROM_COUNT as readonly string[]).includes(id),
@@ -882,7 +907,7 @@ function buildDestinations(
   const os = typeof answers.os === "string" ? answers.os : "";
   const browser =
     typeof answers.browser === "string" ? answers.browser : "";
-  const email = typeof answers.email === "string" ? answers.email : "";
+  const emails = asList(answers.email);
   const vpn = typeof answers.vpn === "string" ? answers.vpn : "";
   const aiDaily =
     typeof answers["ai-daily"] === "string" ? answers["ai-daily"] : "no";
@@ -950,7 +975,7 @@ function buildDestinations(
       "Chrome (historial, sincronización y datos de uso ligados a tu cuenta de Google)",
     );
   }
-  if (email === "gmail") {
+  if (emails.includes("gmail")) {
     googleBits.push(
       "Gmail (correo, contactos y el contenido de los mensajes)",
     );
@@ -976,7 +1001,7 @@ function buildDestinations(
   if (photos.includes("icloud")) {
     appleBits.push("iCloud Fotos");
   }
-  if (email === "icloud-mail") {
+  if (emails.includes("icloud-mail")) {
     appleBits.push("iCloud Mail");
   }
   if (browser === "safari") {
@@ -1002,7 +1027,7 @@ function buildDestinations(
   if (browser === "edge") {
     microsoftBits.push("Edge (historial y sincronización con la cuenta Microsoft)");
   }
-  if (email === "outlook") {
+  if (emails.includes("outlook")) {
     microsoftBits.push("Outlook (correo y contactos en la cuenta Microsoft)");
   }
   if (microsoftBits.length > 0) {
@@ -1050,14 +1075,14 @@ function buildDestinations(
     });
   }
 
-  if (email === "yahoo") {
+  if (emails.includes("yahoo")) {
     dest.push({
       id: "yahoo",
       name: "Yahoo",
       note: "Yahoo Mail guarda el correo, los contactos y el contenido de los mensajes. No tiene cifrado de extremo a extremo y usa la cuenta para anuncios.",
     });
   }
-  if (email === "other") {
+  if (emails.includes("other")) {
     const typed =
       typeof answers[otherTextKey("email")] === "string"
         ? String(answers[otherTextKey("email")]).trim()
@@ -1309,14 +1334,16 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     L("cifrado de extremo a extremo", EXPLAIN.e2ee),
     ". No reenvíes los mensajes a Gmail ni a Outlook.",
   ];
-  if (answers.email === "gmail") {
+  const emails = asList(answers.email);
+  if (emails.includes("gmail")) {
     tips.push(
       tip("email", [
         "Usás Gmail: Configuración > Ver toda la configuración > General. Desactivá las funciones inteligentes en Gmail, Chat y Meet, y las funciones inteligentes en otros productos de Google.",
         ...mailFarther,
       ]),
     );
-  } else if (answers.email === "outlook") {
+  }
+  if (emails.includes("outlook")) {
     tips.push(
       tip("email", [
         "Usás Outlook: Configuración > General > Privacidad. Desactivá las experiencias conectadas. En la cuenta Microsoft, desactivá los ",
@@ -1325,7 +1352,8 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
         ...mailFarther,
       ]),
     );
-  } else if (answers.email === "yahoo") {
+  }
+  if (emails.includes("yahoo")) {
     tips.push(
       tip("email", [
         "Usás Yahoo Mail: en los ",
@@ -1334,7 +1362,8 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
         ...mailFarther,
       ]),
     );
-  } else if (answers.email === "icloud-mail") {
+  }
+  if (emails.includes("icloud-mail")) {
     tips.push(
       tip("email", [
         "Usás iCloud Mail: Configuración > [tu nombre] > iCloud > activá la ",
@@ -1342,7 +1371,8 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
         ".",
       ]),
     );
-  } else if (answers.email === "proton") {
+  }
+  if (emails.includes("proton")) {
     tips.push(tip("email", positiveMail));
   }
 
