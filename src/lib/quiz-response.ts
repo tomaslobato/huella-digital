@@ -103,9 +103,15 @@ function sanitizeQuestion(
 
   if (question.type === "multi") {
     const value = raw[question.id];
-    if (!Array.isArray(value) || value.length > MAX_MULTI_VALUES) return {};
+    // Respuestas viejas del correo llegan como string: una sola cuenta.
+    const items = Array.isArray(value)
+      ? value
+      : question.id === "email" && typeof value === "string" && value.length > 0
+        ? [value]
+        : null;
+    if (!items || items.length > MAX_MULTI_VALUES) return {};
     const picked = new Set<string>();
-    for (const item of value) {
+    for (const item of items) {
       if (typeof item === "string" && allowed.has(item)) picked.add(item);
     }
     if (picked.size === 0) return {};
