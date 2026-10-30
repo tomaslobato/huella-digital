@@ -4,6 +4,7 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
   useTransition,
 } from "react";
@@ -81,6 +82,9 @@ function TipText({ parts }: { parts: TipPart[] }) {
 
 const THEME_KEY = "theme";
 
+const ANONYMOUS_NOTICE =
+  "Guardamos tus respuestas de forma anónima, sin datos que te identifiquen, solo para estadísticas.";
+
 function readStoredTheme(): "light" | "dark" | null {
   try {
     const stored = localStorage.getItem(THEME_KEY);
@@ -126,6 +130,7 @@ export function HuellaApp() {
   const [resultStep, setResultStep] = useState<ResultStep>("score");
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [, startTransition] = useTransition();
+  const responseSent = useRef(false);
 
   useLayoutEffect(() => {
     applyStoredTheme();
@@ -174,6 +179,7 @@ export function HuellaApp() {
         : 0;
 
   function start() {
+    responseSent.current = false;
     startTransition(() => {
       setPhase("quiz");
       setCursor(0);
@@ -262,6 +268,20 @@ export function HuellaApp() {
       setCursor((c) => c + 1);
       return;
     }
+    if (!responseSent.current) {
+      responseSent.current = true;
+      const body = JSON.stringify({ answers });
+      void fetch("/api/responses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+        keepalive: true,
+        credentials: "omit",
+        cache: "no-store",
+      }).catch(() => {
+        /* Sin base o sin red, el resultado sigue en pantalla. */
+      });
+    }
     startTransition(() => {
       setResultStep("score");
       setPhase("results");
@@ -269,6 +289,7 @@ export function HuellaApp() {
   }
 
   function reset() {
+    responseSent.current = false;
     startTransition(() => {
       setPhase("landing");
       setCursor(0);
@@ -362,8 +383,8 @@ function Landing({ onStart }: { onStart: () => void }) {
           </Button>
           <ThemeToggle />
         </div>
-        <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-          Guardamos tus respuestas de forma anónima.
+        <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
+          {ANONYMOUS_NOTICE}
         </p>
       </div>
     </main>
@@ -674,6 +695,9 @@ function Results({
           </p>
           <p className="mt-4 text-xs tracking-wide text-muted-foreground uppercase">
             Índice {result.score}/100
+          </p>
+          <p className="mx-auto mt-6 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            {ANONYMOUS_NOTICE}
           </p>
         </header>
 
