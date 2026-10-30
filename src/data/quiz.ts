@@ -725,15 +725,15 @@ export function scoreAnswers(answers: AnswerMap): ScoreResult {
     score <= 20 ? 1 : score <= 40 ? 2 : score <= 60 ? 3 : score <= 80 ? 4 : 5;
 
   const labels: Record<number, string> = {
-    1: "Nivel terrible de privacidad",
-    2: "Nivel malo de privacidad",
+    1: "Nivel muy bajo de privacidad",
+    2: "Nivel bajo de privacidad",
     3: "Nivel aceptable de privacidad",
     4: "Muy buen nivel de privacidad",
     5: "Excelente nivel de privacidad",
   };
 
   const summaries: Record<number, string> = {
-    1: "Tu huella digital está muy expuesta. Las redes, el tipo de publicaciones, cómo entrás, el sistema, la nube o la inteligencia artificial dejan un rastro fácil de seguir.",
+    1: "Deberías mejorar mucho tu privacidad.",
     2: "Hay varias puertas abiertas en tu día a día digital. Todavía estás a tiempo de cerrarlas.",
     3: "Ni tan expuesto ni tan protegido: un nivel intermedio, con margen claro para mejorar.",
     4: "Tus hábitos ya limitan bastante el rastro. Vas por un camino sólido.",
