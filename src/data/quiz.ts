@@ -658,7 +658,7 @@ function ecosystemConcentrationImpact(answers: AnswerMap): number {
 }
 
 export function scoreAnswers(answers: AnswerMap): ScoreResult {
-  let raw = 58;
+  let raw = 50;
 
   for (const q of questions) {
     if (q.skipIf?.(answers)) continue;

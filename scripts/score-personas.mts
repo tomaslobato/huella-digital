@@ -2,24 +2,34 @@
  * Puntajes de tres personas de referencia.
  * Correr: pnpm score-personas
  */
-import { scoreAnswers, type AnswerMap } from "../src/data/quiz.ts";
+import {
+  questions,
+  scoreAnswers,
+  visibleQuestionIndexes,
+  type AnswerMap,
+} from "../src/data/quiz.ts";
 
 const personas: { id: string; label: string; answers: AnswerMap }[] = [
   {
     id: "cotidiana",
     label:
-      "iPhone, Gmail, IA de vez en cuando, sin VPN, Instagram+TikTok+YouTube+X, 2 h/día, casi no publica, login con Google, Windows, Brave",
+      "iPhone, Gmail, fotos en iCloud, IA de vez en cuando para estudio y a veces con datos propios, sin VPN, Instagram+TikTok+YouTube+X, 2 h/día, casi no publica, login con Google, Windows, Brave",
     answers: {
       networks: ["instagram", "tiktok", "youtube", "x"],
       time: "2",
       publish: "almost-never",
+      // La pregunta no se muestra si publica "casi nunca"; queda igual el caso realista.
+      "post-types": ["light"],
       login: ["google"],
       email: "gmail",
       phone: "iphone",
       os: "windows",
       browser: "brave",
       vpn: "no",
+      photos: ["icloud"],
       "ai-daily": "sometimes",
+      "ai-how": ["study-work"],
+      "ai-personal": "some",
     },
   },
   {
@@ -84,9 +94,22 @@ const cotidiana = scoreAnswers(personas[0].answers);
 const privada = scoreAnswers(personas[1].answers);
 const expuesta = scoreAnswers(personas[2].answers);
 
-if (cotidiana.score < 40 || cotidiana.score > 50 || cotidiana.stars !== 3) {
+const missing = visibleQuestionIndexes(personas[0].answers)
+  .map((i) => questions[i].id)
+  .filter((id) => {
+    const value = personas[0].answers[id];
+    if (Array.isArray(value)) return value.length === 0;
+    return typeof value !== "string" || value === "";
+  });
+if (missing.length > 0) {
   console.error(
-    `La persona cotidiana debería quedar en 40–50 y 3 estrellas. Salió ${cotidiana.score} (${cotidiana.stars}).`,
+    `A la persona cotidiana le faltan respuestas visibles: ${missing.join(", ")}.`,
+  );
+  failed = true;
+}
+if (cotidiana.score < 27 || cotidiana.score > 35 || cotidiana.stars !== 2) {
+  console.error(
+    `La persona cotidiana debería quedar en 27–35 y 2 estrellas. Salió ${cotidiana.score} (${cotidiana.stars}).`,
   );
   failed = true;
 }
