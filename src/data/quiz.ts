@@ -1289,9 +1289,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     ".",
   ];
   const positiveMail: TipPart[] = [
-    "Usás ",
-    answers.email === "tuta" ? "Tuta" : "Proton Mail",
-    ": el correo ya va con ",
+    "Usás Proton Mail: el correo ya va con ",
     L("cifrado de extremo a extremo", EXPLAIN.e2ee),
     ". No reenvíes los mensajes a Gmail ni a Outlook.",
   ];
@@ -1328,7 +1326,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
         ".",
       ]),
     );
-  } else if (answers.email === "proton" || answers.email === "tuta") {
+  } else if (answers.email === "proton") {
     tips.push(tip("email", positiveMail));
   }
 
