@@ -231,7 +231,16 @@ export function HuellaApp() {
     if (question.type === "hours" || question.id === "time") {
       return isValidTimeAnswer(answers);
     }
-    if (question.options.some((o) => o.customText)) {
+    const selectedIds = Array.isArray(answers[question.id])
+      ? (answers[question.id] as string[])
+      : typeof answers[question.id] === "string"
+        ? [answers[question.id] as string]
+        : [];
+    const textRequired = question.options.some(
+      (o) =>
+        o.customText && !o.customTextOptional && selectedIds.includes(o.id),
+    );
+    if (textRequired) {
       return isValidOtherTextAnswer(answers, question.id);
     }
     const v = answers[question.id];
@@ -582,15 +591,27 @@ function QuizStep({
                     <input
                       id={`custom-text-${opt.id}`}
                       type="text"
+                      inputMode="text"
+                      enterKeyHint="done"
                       value={customText}
                       onChange={(e) =>
                         onCustomText(e.target.value.slice(0, 120))
                       }
+                      onFocus={(e) =>
+                        e.currentTarget.scrollIntoView({
+                          block: "nearest",
+                          inline: "nearest",
+                        })
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") e.currentTarget.blur();
+                      }}
                       placeholder={
                         opt.customTextPlaceholder ?? "Escribí acá…"
                       }
                       autoComplete="off"
-                      className="h-10 w-full border border-border bg-transparent px-3 text-[15px] outline-none focus:border-foreground"
+                      autoCapitalize="sentences"
+                      className="h-11 w-full border border-border bg-transparent px-3 text-base outline-none focus:border-foreground"
                     />
                   </div>
                 )}

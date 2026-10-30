@@ -12,6 +12,8 @@ export type QuestionOption = {
   customTextLabel?: string;
   /** Placeholder del input de texto libre */
   customTextPlaceholder?: string;
+  /** Si true, se puede seguir aunque el texto libre esté vacío */
+  customTextOptional?: boolean;
 };
 
 /** Clave en AnswerMap para el texto libre de una opción “Otro”. */
@@ -205,7 +207,15 @@ export const questions: Question[] = [
       { id: "icloud-mail", label: "iCloud Mail", impact: -2 },
       { id: "proton", label: "Proton Mail", impact: 5 },
       { id: "tuta", label: "Tuta", impact: 5 },
-      { id: "other", label: "Otro", impact: 0 },
+      {
+        id: "other",
+        label: "Otro",
+        impact: 0,
+        customText: true,
+        customTextOptional: true,
+        customTextLabel: "¿Cuál?",
+        customTextPlaceholder: "¿Cuál usás?",
+      },
     ],
   },
   {
@@ -1048,10 +1058,16 @@ function buildDestinations(
     });
   }
   if (email === "other") {
+    const typed =
+      typeof answers[otherTextKey("email")] === "string"
+        ? String(answers[otherTextKey("email")]).trim()
+        : "";
     dest.push({
       id: "email",
-      name: "Tu proveedor de correo",
-      note: "El correo, los contactos y, en muchos casos, el contenido de los mensajes quedan en esa empresa.",
+      name: typed || "Tu proveedor de correo",
+      note: typed
+        ? `Usás ${typed}.`
+        : "El correo, los contactos y, en muchos casos, el contenido de los mensajes quedan en esa empresa.",
     });
   }
 
