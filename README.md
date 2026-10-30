@@ -12,7 +12,7 @@ Experiencia web de concientización sobre privacidad: respondes un cuestionario 
    - Android / iPhone / otro (+ tutorial de ajustes)
    - Dónde guardas fotos (Google Fotos, iCloud, etc.)
    - Uso de IA: frecuencia, para qué, si le cuentas lo personal
-3. **Resultado** — estrellas (1 terrible, 2 malo, 3 promedio, 4 muy buen nivel, 5 excelente), tips por sección y tutorial.
+3. **Resultado** — estrellas (1 terrible, 2 malo, 3 aceptable, 4 muy buen nivel, 5 excelente), tips por sección y tutorial.
 
 Las respuestas se guardan de forma anónima.
 

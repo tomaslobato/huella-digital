@@ -727,7 +727,7 @@ export function scoreAnswers(answers: AnswerMap): ScoreResult {
   const labels: Record<number, string> = {
     1: "Nivel terrible de privacidad",
     2: "Nivel malo de privacidad",
-    3: "Nivel promedio de privacidad",
+    3: "Nivel aceptable de privacidad",
     4: "Muy buen nivel de privacidad",
     5: "Excelente nivel de privacidad",
   };
