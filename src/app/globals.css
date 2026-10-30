@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
@@ -34,7 +34,15 @@
   --radius-2xl: calc(var(--radius) * 1.8);
 }
 
-:root {
+/*
+  El tema claro es una elección explícita (data-theme="light"), no solo
+  la ausencia de .dark. Si el sistema está en oscuro y la clase .dark
+  queda pegada, este selector igual gana: es más específico que :root y .dark.
+  color-scheme se aplica desde JS para que Lightning CSS no reescriba
+  los colores con light-dark() según prefers-color-scheme.
+*/
+:root,
+html[data-theme="light"] {
   --background: #eef1f4;
   --foreground: #111318;
   --card: #eef1f4;
@@ -59,10 +67,10 @@
   --track: #d5dce3;
   --star-empty: #c5ced6;
   --dot: #b8c2cc;
-  color-scheme: light;
 }
 
-.dark {
+.dark,
+html[data-theme="dark"] {
   --background: #14181d;
   --foreground: #e8edf1;
   --card: #14181d;
@@ -86,7 +94,6 @@
   --track: #2a333c;
   --star-empty: #3d4752;
   --dot: #5c6772;
-  color-scheme: dark;
 }
 
 @layer base {

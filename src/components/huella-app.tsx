@@ -92,13 +92,23 @@ function readStoredTheme(): "light" | "dark" | null {
 }
 
 /** Misma regla que el script del layout: lo guardado, o si no, el sistema. */
-function applyStoredTheme() {
+function applyTheme(theme: "light" | "dark") {
+  const root = document.documentElement;
+  root.setAttribute("data-theme", theme);
+  root.classList.toggle("dark", theme === "dark");
+  root.style.colorScheme = theme;
+}
+
+function applyStoredTheme(): "light" | "dark" {
   const stored = readStoredTheme();
-  const dark =
-    stored === "dark" ||
-    (stored !== "light" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
-  document.documentElement.classList.toggle("dark", dark);
+  const theme: "light" | "dark" =
+    stored === "light" || stored === "dark"
+      ? stored
+      : window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+  applyTheme(theme);
+  return theme;
 }
 
 type Phase = "landing" | "quiz" | "results";
@@ -125,14 +135,8 @@ export function HuellaApp() {
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const onChange = () => {
-      let stored: string | null = null;
-      try {
-        stored = localStorage.getItem("theme");
-      } catch {
-        stored = null;
-      }
-      if (stored === "light" || stored === "dark") return;
-      document.documentElement.classList.toggle("dark", mq.matches);
+      if (readStoredTheme()) return;
+      applyTheme(mq.matches ? "dark" : "light");
     };
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
@@ -359,10 +363,9 @@ function Landing({ onStart }: { onStart: () => void }) {
 
 function ThemeToggle() {
   function toggle() {
-    const next = document.documentElement.classList.contains("dark")
-      ? "light"
-      : "dark";
-    document.documentElement.classList.toggle("dark", next === "dark");
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "light" ? "dark" : "light";
+    applyTheme(next);
     try {
       localStorage.setItem(THEME_KEY, next);
     } catch {
@@ -377,8 +380,8 @@ function ThemeToggle() {
       aria-label="Cambiar entre tema claro y oscuro"
       className="relative grid size-12 shrink-0 place-items-center rounded-sm border border-border bg-transparent text-foreground hover:border-foreground/40"
     >
-      <Sun className="col-start-1 row-start-1 size-5 transition-all duration-300 ease-out dark:pointer-events-none dark:scale-0 dark:rotate-90 dark:opacity-0" />
-      <Moon className="col-start-1 row-start-1 size-5 scale-0 -rotate-90 opacity-0 transition-all duration-300 ease-out dark:scale-100 dark:rotate-0 dark:opacity-100" />
+      <Sun className="pointer-events-none col-start-1 row-start-1 size-5 transition-all duration-300 ease-out dark:scale-0 dark:rotate-90 dark:opacity-0" />
+      <Moon className="pointer-events-none col-start-1 row-start-1 size-5 scale-0 -rotate-90 opacity-0 transition-all duration-300 ease-out dark:scale-100 dark:rotate-0 dark:opacity-100" />
     </button>
   );
 }
@@ -970,7 +973,17 @@ function TutorialStep({
             <div>
               <p className="font-medium tracking-tight">{s.title}</p>
               <p className="mt-1 text-[15px] leading-relaxed text-[var(--copy)]">
-                {s.detail}
+                {s.detail}{" "}
+                {s.link && (
+                  <a
+                    href={s.link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-[var(--mark)] underline decoration-[var(--mark)]/70 underline-offset-2 hover:opacity-80"
+                  >
+                    {s.link.label}
+                  </a>
+                )}
               </p>
             </div>
           </li>
