@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 /** Corre antes de pintar: preferencia guardada, o la del sistema si todavía no eligió. */
-const themeInitScript = `(function(){try{var s=localStorage.getItem("theme");var d=s==="dark"||(s!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(d)document.documentElement.classList.add("dark");}catch(e){}})();`;
+const themeInitScript = `(function(){try{var s=localStorage.getItem("theme");var d=s==="dark"||(s!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);var t=d?"dark":"light";var h=document.documentElement;h.setAttribute("data-theme",t);h.classList.toggle("dark",d);h.style.colorScheme=t;}catch(e){}})();`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
