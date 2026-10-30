@@ -223,7 +223,7 @@ export const questions: Question[] = [
     title: "¿Qué celular usás?",
     type: "single",
     options: [
-      { id: "iphone", label: "iPhone", impact: 0 },
+      { id: "iphone", label: "iPhone", impact: 2 },
       { id: "samsung", label: "Samsung", impact: 0 },
       { id: "android-other", label: "Otro Android", impact: 0 },
     ],
