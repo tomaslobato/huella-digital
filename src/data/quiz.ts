@@ -54,6 +54,7 @@ export const questions: Question[] = [
       { id: "youtube", label: "YouTube", impact: -3 },
       { id: "x", label: "X (Twitter)", impact: -3 },
       { id: "facebook", label: "Facebook", impact: -3 },
+      { id: "snapchat", label: "Snapchat", impact: -3 },
       { id: "whatsapp", label: "WhatsApp", impact: 0 },
       { id: "telegram", label: "Telegram", impact: 0 },
       { id: "reddit", label: "Reddit", impact: -3 },
@@ -873,6 +874,7 @@ const KNOWN_NETWORKS = [
   "youtube",
   "x",
   "facebook",
+  "snapchat",
   "whatsapp",
   "telegram",
   "reddit",
@@ -1038,6 +1040,13 @@ function buildDestinations(
     });
   }
 
+  if (networkIds.includes("snapchat")) {
+    dest.push({
+      id: "snapchat",
+      name: "Snapchat (Snap)",
+      note: "Las historias, los snaps y el Mapa arman un perfil. Snap guarda contactos, la cámara y datos para anuncios.",
+    });
+  }
   if (networkIds.includes("tiktok")) {
     dest.push({
       id: "tiktok",
@@ -1196,6 +1205,13 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       ]),
     );
   }
+  if (networkIds.includes("snapchat")) {
+    tips.push(
+      tip("networks", [
+        "Usás Snapchat: Ajustes > Mi privacidad y datos. En Quién puede ver mi ubicación y en Quién puede ver Mi historia, elegí Amigos. En el Mapa, activá el Modo fantasma.",
+      ]),
+    );
+  }
 
   if (isValidTimeAnswer(answers)) {
     const { hours } = parseTimeHours(answers);
@@ -1237,6 +1253,11 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     if (networkIds.includes("youtube")) {
       bits.push(
         "Usás YouTube: Historial > pausá el historial y desactivá los anuncios personalizados.",
+      );
+    }
+    if (networkIds.includes("snapchat")) {
+      bits.push(
+        "Usás Snapchat: Ajustes > Mi cuenta > Preferencias de anuncios. Desactivá los anuncios basados en la audiencia.",
       );
     }
     if (bits.length === 0 && networkIds.length > 0) {
