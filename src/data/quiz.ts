@@ -412,7 +412,6 @@ export const EXPLAIN = {
   vpn: "https://es.wikipedia.org/wiki/Red_privada_virtual",
   e2ee: "https://es.wikipedia.org/wiki/Cifrado_de_extremo_a_extremo",
   isp: "https://es.wikipedia.org/wiki/Proveedor_de_servicios_de_internet",
-  metadata: "https://es.wikipedia.org/wiki/Metadato",
   /** Privacidad en la publicidad de Android (temas y anuncios del sistema). */
   adId: "https://support.google.com/android/answer/13720755?hl=es",
   /** Id. de publicidad de Windows 11. No reutilizar el enlace de Android. */
@@ -1491,41 +1490,14 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   if (answers["ai-daily"] && answers["ai-daily"] !== "no") {
     tips.push(
       tip("ai-daily", [
-        "Usás inteligencia artificial: en ChatGPT, Configuración > Controles de datos > desactivá Mejorar el modelo para todos. En Gemini, Actividad de las apps de Gemini > Desactivar. Borrá los chats viejos.",
+        "Usás IA: sea que uses ChatGPT, Claude, Gemini o Grok, en la configuración tenés una opción de memoria. Desactivala.",
       ]),
     );
-
-    const aiHow = asList(answers["ai-how"]);
-    if (aiHow.includes("study-work") || aiHow.includes("docs")) {
-      tips.push(
-        tip("ai-how", [
-          "Usás inteligencia artificial: antes de pegar un texto, borrá nombres, correos y números.",
-        ]),
-      );
-    }
-    if (aiHow.includes("images") || aiHow.includes("generate-media")) {
-      tips.push(
-        tip("ai-how", [
-          "Usás inteligencia artificial: antes de subir una foto, sacale los ",
-          L("metadatos", EXPLAIN.metadata),
-          " y recortá documentos y caras.",
-        ]),
-      );
-    }
-    if (aiHow.includes("voice")) {
-      tips.push(
-        tip("ai-how", [
-          "Usás inteligencia artificial: en el asistente de voz, desactivá Guardar actividad de audio y Mejorar el servicio con tus grabaciones.",
-        ]),
-      );
-    }
-    if (aiHow.includes("life") || answers["ai-personal"] === "a-lot" || answers["ai-personal"] === "therapist" || answers["ai-personal"] === "some") {
-      tips.push(
-        tip("ai-personal", [
-          "Usás inteligencia artificial: no escribas nombre, dirección ni datos de salud. Borrá los chats que ya los tengan.",
-        ]),
-      );
-    }
+    tips.push(
+      tip("ai-daily", [
+        "Usás IA: no pegues nombres, correos, documentos, datos de salud ni fotos. Si ya lo hiciste, borrá esos chats.",
+      ]),
+    );
   }
 
   return tips;
