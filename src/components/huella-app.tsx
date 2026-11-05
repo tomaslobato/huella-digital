@@ -384,7 +384,7 @@ function Landing({ onStart }: { onStart: () => void }) {
           <ThemeToggle />
         </div>
         <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-          {ANONYMOUS_NOTICE}
+          Guardamos tus respuestas de forma anónima.
         </p>
       </div>
     </main>
