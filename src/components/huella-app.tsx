@@ -85,6 +85,9 @@ const THEME_KEY = "theme";
 const ANONYMOUS_NOTICE =
   "Guardamos tus respuestas de forma anónima, sin datos que te identifiquen, solo para estadísticas.";
 
+const ADVICE_SCOPE_NOTICE =
+  "No es necesario hacer todo. Con solo aplicar algunos de estos cambios hacés una diferencia.";
+
 function readStoredTheme(): "light" | "dark" | null {
   try {
     const stored = localStorage.getItem(THEME_KEY);
@@ -826,9 +829,9 @@ function Results({
           <h1 className="font-display text-3xl tracking-tight sm:text-4xl">
             Consejos personalizados
           </h1>
-          {tipGroups.length > 0 && (
+          {(hasAdviceContent || nextTutorial) && (
             <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-[var(--copy)]">
-              Elegí alguno de estos cambios para empezar
+              {ADVICE_SCOPE_NOTICE}
             </p>
           )}
         </header>
@@ -1005,6 +1008,9 @@ function TutorialStep({
           Guía — {tutorial.title}
         </h1>
         <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-[var(--copy)]">
+          {ADVICE_SCOPE_NOTICE}
+        </p>
+        <p className="mt-3 max-w-lg text-[15px] leading-relaxed text-[var(--copy)]">
           {tutorial.intro}
         </p>
       </header>
