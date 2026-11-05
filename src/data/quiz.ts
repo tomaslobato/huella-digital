@@ -1148,14 +1148,14 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
   if (networkIds.includes("instagram")) {
     tips.push(
       tip("networks", [
-        "Usás Instagram: Configuración y actividad > Centro de cuentas > Actividad de otras empresas. Desconectala. En Privacidad, desactivá las sugerencias a contactos.",
+        "Usás Instagram: Configuración y actividad > Centro de cuentas > Actividad de otras empresas. Desconectala. En Privacidad, desactivá las sugerencias a contactos. En Preferencias de anuncios, desactivá los anuncios personalizados.",
       ]),
     );
   }
   if (networkIds.includes("facebook")) {
     tips.push(
       tip("networks", [
-        "Usás Facebook: Centro de cuentas > Actividad de otras empresas. Desconectala. En Preferencias de anuncios, desactivá los anuncios a partir de datos de socios.",
+        "Usás Facebook: Centro de cuentas > Actividad de otras empresas. Desconectala. En Preferencias de anuncios, desactivá los anuncios personalizados y los que salen de datos de socios.",
       ]),
     );
   }
@@ -1227,46 +1227,25 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     tips.push(tip("time", [timePath]));
   }
 
-  if (typeof answers.publish === "string" && answers.publish !== "") {
-    const bits: string[] = [];
-    if (networkIds.includes("instagram")) {
-      bits.push(
-        "Usás Instagram: Centro de cuentas > Preferencias de anuncios. Desactivá los anuncios personalizados.",
-      );
-    }
-    if (networkIds.includes("facebook")) {
-      bits.push(
-        "Usás Facebook: Centro de cuentas > Preferencias de anuncios. Desactivá los anuncios personalizados.",
-      );
-    }
-    if (networkIds.includes("tiktok")) {
-      bits.push(
-        "Usás TikTok: Anuncios: desactivá los anuncios personalizados.",
-      );
-    }
-    if (networkIds.includes("x")) {
-      bits.push(
-        "Usás X: Preferencias de anuncios: desactivá la personalización.",
-      );
-    }
-    if (networkIds.includes("youtube")) {
-      bits.push(
-        "Usás YouTube: Historial > pausá el historial y desactivá los anuncios personalizados. Ojo: pausar el historial lo borra todo; si querés conservarlo, no lo hagas.",
-      );
-    }
-    if (networkIds.includes("snapchat")) {
-      bits.push(
-        "Usás Snapchat: Ajustes > Mi cuenta > Preferencias de anuncios. Desactivá los anuncios basados en la audiencia.",
-      );
-    }
-    if (bits.length === 0 && networkIds.length > 0) {
-      bits.push(
+  const networksWithAdTip = [
+    "instagram",
+    "facebook",
+    "tiktok",
+    "x",
+    "youtube",
+    "reddit",
+  ];
+  if (
+    typeof answers.publish === "string" &&
+    answers.publish !== "" &&
+    networkIds.length > 0 &&
+    !networkIds.some((id) => networksWithAdTip.includes(id))
+  ) {
+    tips.push(
+      tip("networks", [
         "En cada red que usás: desactivá los anuncios personalizados.",
-      );
-    }
-    if (bits.length > 0) {
-      for (const bit of bits) tips.push(tip("publish", [bit]));
-    }
+      ]),
+    );
   }
 
   const postTypes = asList(answers["post-types"]);
