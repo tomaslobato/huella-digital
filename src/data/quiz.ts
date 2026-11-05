@@ -1186,7 +1186,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       tip("networks", [
         "Usás YouTube: entrá a ",
         L("Mi actividad de YouTube", EXPLAIN.youtubeActivity),
-        ". Pausá el Historial de YouTube, activá el borrado automático y desactivá los anuncios personalizados.",
+        ". Pausá el Historial de YouTube y activá el borrado automático. Ojo: eso borra todo tu historial; si querés conservarlo, no lo hagas.",
       ]),
     );
   }
@@ -1375,6 +1375,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     tips.push(tip("email", positiveMail));
   }
 
+  // Brave y Firefox ya son navegadores privados: no hace falta un tip de navegador.
   if (browser === "chrome") {
     tips.push(
       tip("browser", [
@@ -1393,22 +1394,6 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
         "Usás Safari: Configuración > Apps > Safari. Activá Impedir seguimiento entre sitios. Configuración > [tu nombre] > iCloud > activá Retransmisión privada.",
       ]),
     );
-  } else if (browser === "firefox") {
-    tips.push(
-      tip("browser", [
-        "Usás Firefox: Ajustes > Privacidad y seguridad. Elegí Protección contra ",
-        L("rastreo", EXPLAIN.tracker),
-        " mejorada: Estricta. Desactivá Enviar datos técnicos y de interacción a Mozilla.",
-      ]),
-    );
-  } else if (browser === "brave") {
-    tips.push(
-      tip("browser", [
-        "Usás Brave: Ajustes > Escudos. Dejá el bloqueo de ",
-        L("rastreadores", EXPLAIN.tracker),
-        " y anuncios en Agresivo.",
-      ]),
-    );
   } else if (browser === "other") {
     const other =
       typeof answers[otherTextKey("browser")] === "string"
@@ -1425,24 +1410,41 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     );
   }
 
-  const usesGoogleSearch =
-    browser === "chrome" ||
-    logins.includes("google") ||
-    networkIds.includes("youtube");
-  if (usesGoogleSearch) {
-    tips.push(
-      tip("search", [
-        "Usás la Búsqueda de Google: en ",
-        L("Mi actividad", "https://myactivity.google.com/activitycontrols?hl=es"),
-        ", abrí Actividad en la Web y en aplicaciones y desactivala. Desmarcá Incluir el historial de Chrome.",
-      ]),
-    );
-  } else if (browser === "edge") {
-    tips.push(
-      tip("search", [
-        "Usás Bing: Edge > Configuración > Privacidad, búsqueda y servicios > Barra de direcciones y búsqueda. Desactivá las sugerencias de búsqueda y los resultados de Bing personalizados.",
-      ]),
-    );
+  const searchAlternatives =
+    " Alternativas privadas: Brave Search y DuckDuckGo.";
+  // Con Brave el buscador ya puede ser privado: no insistimos con un tip de búsqueda.
+  if (browser !== "brave") {
+    const usesGoogleSearch =
+      browser === "chrome" ||
+      logins.includes("google") ||
+      networkIds.includes("youtube");
+    if (usesGoogleSearch) {
+      tips.push(
+        tip("search", [
+          "Usás la Búsqueda de Google: en ",
+          L(
+            "Mi actividad",
+            "https://myactivity.google.com/activitycontrols?hl=es",
+          ),
+          ", abrí Actividad en la Web y en aplicaciones y desactivala. Desmarcá Incluir el historial de Chrome.",
+          searchAlternatives,
+        ]),
+      );
+    } else if (browser === "edge") {
+      tips.push(
+        tip("search", [
+          "Usás Bing: Edge > Configuración > Privacidad, búsqueda y servicios > Barra de direcciones y búsqueda. Desactivá las sugerencias de búsqueda y los resultados de Bing personalizados.",
+          searchAlternatives,
+        ]),
+      );
+    } else {
+      tips.push(
+        tip("search", [
+          "Si buscás en Google u otro buscador que te perfila, desactivá el historial personalizado.",
+          searchAlternatives,
+        ]),
+      );
+    }
   }
 
   if (answers.vpn === "no" || answers.vpn === "sometimes") {
