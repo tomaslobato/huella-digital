@@ -59,6 +59,7 @@ const personas: { id: string; label: string; answers: AnswerMap }[] = [
         "youtube",
         "x",
         "facebook",
+        "snapchat",
         "reddit",
         "whatsapp",
         "telegram",
