@@ -1178,7 +1178,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
       tip("networks", [
         "Usás YouTube: entrá a ",
         L("Mi actividad de YouTube", EXPLAIN.youtubeActivity),
-        ". Pausá el Historial de YouTube y activá el borrado automático.",
+        ". Pausá el Historial de YouTube y activá el borrado automático. Ojo: eso borra todo tu historial; si querés conservarlo, no lo hagas.",
       ]),
     );
   }
@@ -1236,7 +1236,7 @@ function buildTips(answers: AnswerMap, networkIds: string[]): Tip[] {
     }
     if (networkIds.includes("youtube")) {
       bits.push(
-        "Usás YouTube: Historial > pausá el historial y desactivá los anuncios personalizados.",
+        "Usás YouTube: Historial > pausá el historial y desactivá los anuncios personalizados. Ojo: pausar el historial lo borra todo; si querés conservarlo, no lo hagas.",
       );
     }
     if (bits.length === 0 && networkIds.length > 0) {
