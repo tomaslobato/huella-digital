@@ -384,6 +384,26 @@ export function HuellaApp() {
 function Landing({ onStart }: { onStart: () => void }) {
   return (
     <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
+      <p className="fade-in mb-6 text-sm tracking-wide text-muted-foreground sm:text-base">
+        proyecto de{" "}
+        <a
+          href="https://youtube.com/tlobato"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-foreground underline decoration-foreground/50 underline-offset-2 transition-opacity hover:opacity-80"
+        >
+          Lobato
+        </a>
+        ,{" "}
+        <a
+          href="https://github.com/tomaslobato/huella-digital"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-foreground transition-opacity hover:opacity-80"
+        >
+          ver código abierto
+        </a>
+      </p>
       <h1 className="fade-in font-display text-6xl leading-[0.9] tracking-[0.04em] text-[var(--mark)] uppercase sm:text-7xl">
         Huella
         <br />
