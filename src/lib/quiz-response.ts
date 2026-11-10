@@ -204,36 +204,71 @@ function ensureSchema(client: Client): Promise<void> {
   return schemaReady;
 }
 
-export type StoreQuizResult = "stored" | "skipped" | "invalid" | "failed";
+export type QuizStarsStats = {
+  averageStars: number;
+  responseCount: number;
+};
+
+export type StoreQuizResult =
+  | ({ status: "stored" } & QuizStarsStats)
+  | { status: "skipped" }
+  | { status: "invalid" }
+  | { status: "failed" };
 
 /**
  * Inserta una fila o no hace nada si faltan las credenciales.
+ * En el mismo batch lee AVG(stars) para no hacer otro viaje a Turso.
  * No registra el cuerpo ni datos de la request.
  */
 export async function storeQuizResponse(
   input: unknown,
 ): Promise<StoreQuizResult> {
   const response = buildQuizResponse(input);
-  if (!response) return "invalid";
+  if (!response) return { status: "invalid" };
 
   const client = getClient();
-  if (!client) return "skipped";
+  if (!client) return { status: "skipped" };
 
   try {
     await ensureSchema(client);
-    await client.execute({
-      sql: `INSERT INTO quiz_responses (id, created_at, answers, score, stars)
-            VALUES (?, ?, ?, ?, ?)`,
-      args: [
-        crypto.randomUUID(),
-        hourBucketIso(),
-        JSON.stringify(response.answers),
-        response.score,
-        response.stars,
+    const [, stats] = await client.batch(
+      [
+        {
+          sql: `INSERT INTO quiz_responses (id, created_at, answers, score, stars)
+                VALUES (?, ?, ?, ?, ?)`,
+          args: [
+            crypto.randomUUID(),
+            hourBucketIso(),
+            JSON.stringify(response.answers),
+            response.score,
+            response.stars,
+          ],
+        },
+        {
+          sql: `SELECT AVG(stars) AS average_stars, COUNT(*) AS response_count
+                FROM quiz_responses`,
+        },
       ],
-    });
-    return "stored";
+      "write",
+    );
+
+    const row = stats.rows[0];
+    const averageRaw = Number(row?.average_stars);
+    const responseCount = Number(row?.response_count);
+    if (
+      !Number.isFinite(averageRaw) ||
+      !Number.isFinite(responseCount) ||
+      responseCount < 1
+    ) {
+      return { status: "failed" };
+    }
+
+    return {
+      status: "stored",
+      averageStars: Math.round(averageRaw * 10) / 10,
+      responseCount,
+    };
   } catch {
-    return "failed";
+    return { status: "failed" };
   }
 }

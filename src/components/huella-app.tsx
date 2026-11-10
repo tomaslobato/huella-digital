@@ -132,6 +132,7 @@ export function HuellaApp() {
   const [cursor, setCursor] = useState(0);
   const [resultStep, setResultStep] = useState<ResultStep>("score");
   const [answers, setAnswers] = useState<AnswerMap>({});
+  const [averageStars, setAverageStars] = useState<number | null>(null);
   const [, startTransition] = useTransition();
   const responseSent = useRef(false);
 
@@ -273,6 +274,7 @@ export function HuellaApp() {
     }
     if (!responseSent.current) {
       responseSent.current = true;
+      setAverageStars(null);
       const body = JSON.stringify({ answers });
       void fetch("/api/responses", {
         method: "POST",
@@ -281,9 +283,26 @@ export function HuellaApp() {
         keepalive: true,
         credentials: "omit",
         cache: "no-store",
-      }).catch(() => {
-        /* Sin base o sin red, el resultado sigue en pantalla. */
-      });
+      })
+        .then(async (res) => {
+          if (!res.ok || res.status === 204) return;
+          const data: unknown = await res.json();
+          if (
+            typeof data !== "object" ||
+            data === null ||
+            !("averageStars" in data)
+          ) {
+            return;
+          }
+          const value = Number(
+            (data as { averageStars: unknown }).averageStars,
+          );
+          if (!Number.isFinite(value) || value < 1 || value > 5) return;
+          setAverageStars(Math.round(value * 10) / 10);
+        })
+        .catch(() => {
+          /* Sin base o sin red, el resultado sigue en pantalla. */
+        });
     }
     startTransition(() => {
       setResultStep("score");
@@ -298,6 +317,7 @@ export function HuellaApp() {
       setCursor(0);
       setResultStep("score");
       setAnswers({});
+      setAverageStars(null);
     });
   }
 
@@ -352,6 +372,7 @@ export function HuellaApp() {
         <Results
           result={result}
           step={resultStep}
+          averageStars={averageStars}
           onStep={setResultStep}
           onReset={reset}
         />
@@ -663,15 +684,25 @@ function QuizStep({
 function Results({
   result,
   step,
+  averageStars,
   onStep,
   onReset,
 }: {
   result: ScoreResult;
   step: ResultStep;
+  averageStars: number | null;
   onStep: (s: ResultStep) => void;
   onReset: () => void;
 }) {
   if (step === "score") {
+    const averageLabel =
+      averageStars === null
+        ? null
+        : averageStars.toLocaleString("es-AR", {
+            minimumFractionDigits: 1,
+            maximumFractionDigits: 1,
+          });
+
     return (
       <main
         key="score"
@@ -690,6 +721,14 @@ function Results({
               /5
             </span>
           </p>
+          {averageLabel !== null && (
+            <p className="mt-3 text-sm text-muted-foreground">
+              Promedio de quienes respondieron:{" "}
+              <span className="font-medium text-foreground">
+                {averageLabel}/5
+              </span>
+            </p>
+          )}
           <h1 className="mt-3 font-display text-2xl tracking-tight">
             {result.label}
           </h1>

@@ -76,7 +76,15 @@ export async function POST(request: Request) {
   }
 
   const result = await storeQuizResponse(parsed.answers);
-  if (result === "invalid") return empty(400);
-  if (result === "failed") return empty(500);
-  return empty(204);
+  if (result.status === "invalid") return empty(400);
+  if (result.status === "failed") return empty(500);
+  if (result.status === "skipped") return empty(204);
+
+  return Response.json(
+    {
+      averageStars: result.averageStars,
+      responseCount: result.responseCount,
+    },
+    { status: 200, headers: { "Cache-Control": "no-store" } },
+  );
 }
