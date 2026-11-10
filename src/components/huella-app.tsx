@@ -384,10 +384,10 @@ export function HuellaApp() {
 function Landing({ onStart }: { onStart: () => void }) {
   return (
     <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
-      <p className="fade-in mb-6 text-sm tracking-wide text-muted-foreground sm:text-base">
-        proyecto de{" "}
+      <p className="fade-in mb-6 text-xs tracking-wide text-muted-foreground sm:text-sm">
+        Proyecto de{" "}
         <a
-          href="https://youtube.com/tlobato"
+          href="https://youtube.com/@tlobato"
           target="_blank"
           rel="noopener noreferrer"
           className="font-medium text-foreground underline decoration-foreground/50 underline-offset-2 transition-opacity hover:opacity-80"

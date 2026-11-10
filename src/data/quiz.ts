@@ -45,7 +45,7 @@ export const TIME_CUSTOM_MAX = TIME_HOURS_MAX;
 export const questions: Question[] = [
   {
     id: "networks",
-    title: "¿Qué redes sociales usás más?",
+    title: "¿Cuáles de estas aplicaciones usás?",
     hint: "Cuantas más usás, más se agranda tu huella digital.",
     type: "multi",
     options: [
